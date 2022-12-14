@@ -1,7 +1,10 @@
 // var eventsRef = new Firebase("https://beerglass.firebaseio.com/events"),
 //     engineRef = new Firebase("https://beerglass.firebaseio.com/engine");
+// yeah, i dont really like having firebase services. is it here to steal my personal information?
 
 // Matter aliases
+const GRAVITY = 2.0;
+
 var Engine = Matter.Engine,
     World = Matter.World,
     Bodies = Matter.Bodies,
@@ -17,12 +20,30 @@ var _engine,
     _sceneHeight,
     _deviceOrientationEvent;
 
+// use the dict ingredient
+var ingredients = [];
+function getIngredients() {
+    var ingredients_selectors = document.getElementsByClassName(
+        "ingredients_selector"
+    );
+    console.log(ingredients_selectors.length);
+    for (var i = 0; i < ingredients_selectors.length; i++) {
+        // console.log(.valueOf);
+        if (ingredients_selectors[i].checked) {
+            ingredients.push(ingredients_selectors[i].value);
+        }
+    }
+    console.log(ingredients);
+}
+
 BeerSimulator.init = function () {
     var canvasContainer = document.getElementById("body"),
         demoStart = document.getElementById("button-start");
 
     demoStart.addEventListener("click", function () {
         demoStart.style.display = "none";
+
+        getIngredients();
 
         _engine = Engine.create(canvasContainer, {
             render: {
@@ -50,7 +71,6 @@ BeerSimulator.init = function () {
         Matter.Events.on(_engine.render, "afterRender", function () {
             // engineRef.push({ world: _engine.world });
 
-            console.log(_engine);
             for (
                 var i = 0;
                 i < _engine.world.composites[0].bodies.length;
@@ -105,8 +125,89 @@ BeerSimulator.init = function () {
 
 window.addEventListener("load", BeerSimulator.init);
 
+function getMilkTea(xx, yy, colums, rows) {
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        colums,
+        rows,
+        0,
+        0,
+        function (x, y, column, row) {
+            var body = Bodies.polygon(
+                x,
+                y,
+                Math.round(Common.random(6, 12)),
+                Common.random(15, 20),
+                { friction: 0.01, restitution: 0.4 }
+            );
+
+            body.render.fillStyle = "#B6A28C";
+            body.render.strokeStyle = "#B6A28C";
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
+function getChocolateSmoothie(xx, yy, colums, rows) {
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        colums,
+        rows,
+        0,
+        0,
+        function (x, y, column, row) {
+            var body = Bodies.polygon(
+                x,
+                y,
+                Math.round(Common.random(6, 12)),
+                Common.random(15, 20),
+                { friction: 0.01, restitution: 0.4 }
+            );
+
+            body.render.fillStyle = "#442b19";
+            body.render.strokeStyle = "#442b19";
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
+function getLemonade(xx, yy, colums, rows) {
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        colums,
+        rows,
+        0,
+        0,
+        function (x, y, column, row) {
+            var body = Bodies.polygon(
+                x,
+                y,
+                Math.round(Common.random(6, 12)),
+                Common.random(15, 20),
+                { friction: 0.01, restitution: 0.4 }
+            );
+
+            body.render.fillStyle = "#cfcfcf";
+            body.render.strokeStyle = "#cfcfcf";
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
+// function getMilktop
+
 BeerSimulator.mixed = function () {
     var _world = _engine.world;
+    // mixup the ingredients
 
     BeerSimulator.reset();
 
@@ -125,13 +226,12 @@ BeerSimulator.mixed = function () {
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                Common.random(5, 10),
+                Common.random(15, 20),
                 { friction: 0.01, restitution: 0.4 }
             );
 
             body.render.fillStyle = "#E5B02B";
             body.render.strokeStyle = "#B95626";
-            console.log(body);
 
             return body;
         }
@@ -150,22 +250,22 @@ BeerSimulator.mixed = function () {
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                Common.random(5, 10),
+                Common.random(15, 20),
                 { friction: 0.01, restitution: 0.4 }
             );
 
             body.render.fillStyle = "#FFF";
             body.render.strokeStyle = "#FFF";
-            console.log(body);
 
             return body;
         }
     );
 
     World.add(_world, stack);
-    setTimeout(function () {
-        World.add(_world, cream);
-    }, 0);
+    World.add(_world, cream);
+    // setTimeout(function () {
+    //     World.add(_world, cream);
+    // }, 0);
 };
 
 BeerSimulator.updateScene = function () {
@@ -188,7 +288,7 @@ BeerSimulator.updateScene = function () {
 
 BeerSimulator.updateGravity = function (event) {
     // eventsRef.push({ beta: event.beta, gamma: event.gamma });
-    console.log(event);
+
     // alert(event);
 
     if (!_engine) return;
@@ -197,17 +297,17 @@ BeerSimulator.updateGravity = function (event) {
         gravity = _engine.world.gravity;
 
     if (orientation === 0) {
-        gravity.x = Common.clamp(event.gamma, -90, 90) / 90;
-        gravity.y = Common.clamp(event.beta, -90, 90) / 90;
+        gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+        gravity.y = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
     } else if (orientation === 180) {
-        gravity.x = Common.clamp(event.gamma, -90, 90) / 90;
-        gravity.y = Common.clamp(-event.beta, -90, 90) / 90;
+        gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+        gravity.y = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
     } else if (orientation === 90) {
-        gravity.x = Common.clamp(event.beta, -90, 90) / 90;
-        gravity.y = Common.clamp(-event.gamma, -90, 90) / 90;
+        gravity.x = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
+        gravity.y = (GRAVITY * Common.clamp(-event.gamma, -90, 90)) / 90;
     } else if (orientation === -90) {
-        gravity.x = Common.clamp(-event.beta, -90, 90) / 90;
-        gravity.y = Common.clamp(event.gamma, -90, 90) / 90;
+        gravity.x = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
+        gravity.y = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
     }
 };
 
