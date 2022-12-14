@@ -3,7 +3,7 @@
 // yeah, i dont really like having firebase services. is it here to steal my personal information?
 
 // Matter aliases
-const GRAVITY = 2.0;
+const GRAVITY = 10.0;
 
 var Engine = Matter.Engine,
     World = Matter.World,
