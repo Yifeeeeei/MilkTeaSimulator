@@ -125,7 +125,7 @@ BeerSimulator.mixed = function () {
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                Common.random(15, 30),
+                Common.random(5, 10),
                 { friction: 0.01, restitution: 0.4 }
             );
 
@@ -150,7 +150,7 @@ BeerSimulator.mixed = function () {
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                Common.random(15, 30),
+                Common.random(5, 10),
                 { friction: 0.01, restitution: 0.4 }
             );
 
