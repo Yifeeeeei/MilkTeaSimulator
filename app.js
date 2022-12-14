@@ -1,5 +1,5 @@
-var eventsRef = new Firebase("https://beerglass.firebaseio.com/events"),
-    engineRef = new Firebase("https://beerglass.firebaseio.com/engine");
+// var eventsRef = new Firebase("https://beerglass.firebaseio.com/events"),
+//     engineRef = new Firebase("https://beerglass.firebaseio.com/engine");
 
 // Matter aliases
 var Engine = Matter.Engine,
@@ -48,7 +48,7 @@ BeerSimulator.init = function () {
         _engine.render.options.background = "#000";
 
         Matter.Events.on(_engine.render, "afterRender", function () {
-            engineRef.push({ world: _engine.world });
+            // engineRef.push({ world: _engine.world });
 
             console.log(_engine);
             for (
@@ -187,7 +187,7 @@ BeerSimulator.updateScene = function () {
 };
 
 BeerSimulator.updateGravity = function (event) {
-    eventsRef.push({ beta: event.beta, gamma: event.gamma });
+    // eventsRef.push({ beta: event.beta, gamma: event.gamma });
     console.log(event);
     // alert(event);
 
