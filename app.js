@@ -3,7 +3,29 @@
 // yeah, i dont really like having firebase services. is it here to steal my personal information?
 
 // Matter aliases
-const GRAVITY = 10.0;
+// the gloabl param for gravity
+const GRAVITY = 2.0;
+// window size
+const WINDOW_WIDTH = document.documentElement.clientWidth;
+const WINDOW_HEIGHT = document.documentElement.clientHeight;
+// all available ingredients, from bottom to top
+const ALL_INGREDIENTS = [
+    "pearl",
+    "westrice",
+    "lemonade",
+    "milktea",
+    "chocolatesmoothie",
+    "milktop",
+];
+
+const ingredients_info = {
+    pearl: { radius: 50, gap: 5, rows: 5 },
+    westrice: { radius: 10, gap: 3, rows: 6 },
+    lemonade: { radius: 40, gap: 0, rows: -1 },
+    milktea: { radius: 40, gap: 0, rows: -1 },
+    chocolatesmoothie: { radius: 40, gap: 0, rows: -1 },
+    milktop: { radius: 30, gap: 0, rows: 12 },
+};
 
 var Engine = Matter.Engine,
     World = Matter.World,
@@ -125,20 +147,20 @@ BeerSimulator.init = function () {
 
 window.addEventListener("load", BeerSimulator.init);
 
-function getMilkTea(xx, yy, colums, rows) {
+function getMilkTea(xx, yy, columns, rows) {
     var ingredient = Composites.stack(
         xx,
         yy,
-        colums,
+        columns,
         rows,
-        0,
-        0,
+        ingredients_info.milktea.gap,
+        ingredients_info.milktea.gap,
         function (x, y, column, row) {
             var body = Bodies.polygon(
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                Common.random(15, 20),
+                ingredients_info.milktea.radius + Common.random(-10, 10),
                 { friction: 0.01, restitution: 0.4 }
             );
 
@@ -151,21 +173,22 @@ function getMilkTea(xx, yy, colums, rows) {
     return ingredient;
 }
 
-function getChocolateSmoothie(xx, yy, colums, rows) {
+function getChocolateSmoothie(xx, yy, columns, rows) {
     var ingredient = Composites.stack(
         xx,
         yy,
-        colums,
+        columns,
         rows,
-        0,
-        0,
+        ingredients_info.chocolatesmoothie.gap,
+        ingredients_info.chocolatesmoothie.gap,
         function (x, y, column, row) {
             var body = Bodies.polygon(
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                Common.random(15, 20),
-                { friction: 0.01, restitution: 0.4 }
+                ingredients_info.chocolatesmoothie.radius +
+                    Common.random(-10, 10),
+                { friction: 0.05, restitution: 0.4 }
             );
 
             body.render.fillStyle = "#442b19";
@@ -177,21 +200,21 @@ function getChocolateSmoothie(xx, yy, colums, rows) {
     return ingredient;
 }
 
-function getLemonade(xx, yy, colums, rows) {
+function getLemonade(xx, yy, columns, rows) {
     var ingredient = Composites.stack(
         xx,
         yy,
-        colums,
+        columns,
         rows,
-        0,
-        0,
+        ingredients_info.lemonade.gap,
+        ingredients_info.lemonade.gap,
         function (x, y, column, row) {
             var body = Bodies.polygon(
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                Common.random(15, 20),
-                { friction: 0.01, restitution: 0.4 }
+                ingredients_info.lemonade.radius + Common.random(-10, 10),
+                { friction: 0.001, restitution: 0.4 }
             );
 
             body.render.fillStyle = "#cfcfcf";
@@ -203,10 +226,186 @@ function getLemonade(xx, yy, colums, rows) {
     return ingredient;
 }
 
-// function getMilktop
+function getMilkTop(xx, yy, columns, rows) {
+    var ingredient = Composites.pyramid(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.milktop.gap,
+        ingredients_info.milktop.gap,
+        function (x, y, column, row) {
+            var body = Bodies.polygon(
+                x,
+                y,
+                Math.round(Common.random(6, 12)),
+                ingredients_info.milktop.radius + Common.random(-20, 20),
+                { friction: 0.01, restitution: 0.4 }
+            );
+
+            body.render.fillStyle = "#FFFFFF";
+            body.render.strokeStyle = "#FFFFFF";
+
+            body.density = 0.0005; //default value is 0.001
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
+function getPearl(xx, yy, columns, rows) {
+    var ingredient = Composites.pyramid(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.pearl.gap,
+        ingredients_info.pearl.gap,
+        function (x, y, column, row) {
+            var body = Bodies.circle(
+                x,
+                y,
+                ingredients_info.pearl.radius + Common.random(-5, 5),
+                {
+                    friction: 0.02,
+                    restitution: 0.4,
+                }
+            );
+
+            body.render.fillStyle = "#000000";
+            body.render.strokeStyle = "#FFFFFF";
+
+            body.density = 0.0015;
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
+function getWestRice(xx, yy, columns, rows) {
+    var ingredient = Composites.pyramid(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.westrice.gap,
+        ingredients_info.westrice.gap,
+        function (x, y, column, row) {
+            var body = Bodies.circle(
+                x,
+                y,
+                ingredients_info.westrice.radius + Common.random(-2, 2),
+                {
+                    friction: 0.02,
+                    restitution: 0.4,
+                }
+            );
+
+            body.render.fillStyle = "#000000";
+            body.render.strokeStyle = "#FFFFFF";
+
+            body.density = 0.0015;
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
+// estimate height to make sure it do not spill out
+
+//only things like pearls or westrice that sinks to the bottom and take up the space bellow max water level
+function isBottomAddings(adding) {
+    const sinking_addings = ["westrice", "pearl"];
+
+    if (sinking_addings.indexOf(adding) != -1) {
+        return true;
+    }
+    return false;
+}
+
+function hasIngredient(ingred) {
+    if (ingredients.indexOf(ingred) != -1) {
+        return true;
+    }
+    return false;
+}
+
+function estimateHeightPassed(max_water_level, scale = 1) {
+    height_now = 0;
+    for (var i = 0; i < ALL_INGREDIENTS.length; i++) {
+        // go from bottom to top
+        if (
+            hasIngredient(ALL_INGREDIENTS[i]) &&
+            isBottomAddings(ALL_INGREDIENTS[i])
+        ) {
+            height_now +=
+                (ingredients_info[ALL_INGREDIENTS[i]].gap +
+                    2 * ingredients_info[ALL_INGREDIENTS[i]].radius) *
+                Math.floor(ingredients_info[ALL_INGREDIENTS[i]].rows * scale);
+            if (height_now > max_water_level) {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+// make beverage
+function makeBeverage(world) {
+    const max_water_level = WINDOW_HEIGHT * 0.7;
+    var now_y = WORLD_HEIGHT;
+    var scale = 1;
+    while (!estimateHeightPassed(max_water_level, scale)) {
+        scale = scale * 0.5;
+    }
+    //make it
+    for (var i = 0; i < ALL_INGREDIENTS.length; i++) {
+        if (hasIngredient(ALL_INGREDIENTS[i])) {
+            switch (ALL_INGREDIENTS[i]) {
+                case "pearl":
+                    var ingred = getPearl(
+                        0,
+                        now_y,
+                        WORLD_WIDTH /
+                            (ingredients_info.pearl.radius * 2 +
+                                ingredients_info.pearl.gap),
+                        Math.floor(ingredients_info.pearl.rows * scale)
+                    );
+                    now_y =
+                        now_y -
+                        (ingredients_info.pearl.radius * 2 +
+                            ingredients_info.pearl.gap) *
+                            ingredients_info.pearl.rows;
+
+                    break;
+                case "westrice":
+                    break;
+                case "lemonade":
+                    break;
+                case "milktea":
+                    break;
+                case "chocolatesmoothie":
+                    break;
+                case "milktop":
+                    break;
+
+                default:
+                    console.log(
+                        "something definitely went wrong, function: hasBeverage"
+                    );
+                    break;
+            }
+        }
+    }
+}
 
 BeerSimulator.mixed = function () {
     var _world = _engine.world;
+    // init gravity
+    _world.gravity.y = GRAVITY;
     // mixup the ingredients
 
     BeerSimulator.reset();
@@ -226,7 +425,7 @@ BeerSimulator.mixed = function () {
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                Common.random(15, 20),
+                Common.random(30, 50),
                 { friction: 0.01, restitution: 0.4 }
             );
 
