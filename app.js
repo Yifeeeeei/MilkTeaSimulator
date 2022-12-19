@@ -6,8 +6,8 @@
 // the gloabl param for gravity
 const GRAVITY = 2.0;
 // window size
-const WINDOW_WIDTH = document.documentElement.clientWidth;
-const WINDOW_HEIGHT = document.documentElement.clientHeight;
+const WORLD_WIDTH = document.documentElement.clientWidth;
+const WORLD_HEIGHT = document.documentElement.clientHeight;
 // all available ingredients, from bottom to top
 const ALL_INGREDIENTS = [
     "pearl",
@@ -164,8 +164,8 @@ function getMilkTea(xx, yy, columns, rows) {
                 { friction: 0.01, restitution: 0.4 }
             );
 
-            body.render.fillStyle = "#B6A28C";
-            body.render.strokeStyle = "#B6A28C";
+            body.render.fillStyle = "#b6a28c";
+            body.render.strokeStyle = "#b6a28c";
 
             return body;
         }
@@ -354,8 +354,8 @@ function estimateHeightPassed(max_water_level, scale = 1) {
 }
 
 // make beverage
-function makeBeverage(world) {
-    const max_water_level = WINDOW_HEIGHT * 0.7;
+function makeBeverage(app_world) {
+    const max_water_level = WORLD_HEIGHT * 0.7;
     var now_y = WORLD_HEIGHT;
     var scale = 1;
     while (!estimateHeightPassed(max_water_level, scale)) {
@@ -366,6 +366,11 @@ function makeBeverage(world) {
         if (hasIngredient(ALL_INGREDIENTS[i])) {
             switch (ALL_INGREDIENTS[i]) {
                 case "pearl":
+                    now_y =
+                        now_y -
+                        (ingredients_info.pearl.radius * 2 +
+                            ingredients_info.pearl.gap) *
+                            ingredients_info.pearl.rows;
                     var ingred = getPearl(
                         0,
                         now_y,
@@ -374,22 +379,114 @@ function makeBeverage(world) {
                                 ingredients_info.pearl.gap),
                         Math.floor(ingredients_info.pearl.rows * scale)
                     );
-                    now_y =
-                        now_y -
-                        (ingredients_info.pearl.radius * 2 +
-                            ingredients_info.pearl.gap) *
-                            ingredients_info.pearl.rows;
 
+                    World.add(app_world, ingred);
                     break;
                 case "westrice":
+                    now_y =
+                        now_y -
+                        (ingredients_info.westrice.radius * 2 +
+                            ingredients_info.westrice.gap) *
+                            ingredients_info.westrice.rows;
+                    var ingred = getWestRice(
+                        0,
+                        now_y,
+                        WORLD_WIDTH /
+                            (ingredients_info.westrice.radius * 2 +
+                                ingredients_info.westrice.gap),
+                        Math.floor(ingredients_info.westrice.rows * scale)
+                    );
+
+                    World.add(app_world, ingred);
                     break;
                 case "lemonade":
+                    now_y =
+                        now_y -
+                        (ingredients_info.lemonade.radius * 2 +
+                            ingredients_info.lemonade.gap) *
+                            ingredients_info.lemonade.rows;
+                    var ingred = getLemonade(
+                        0,
+                        now_y,
+                        WORLD_WIDTH /
+                            (ingredients_info.lemonade.radius * 2 +
+                                ingredients_info.lemonade.gap),
+                        Math.floor(ingredients_info.lemonade.rows * scale)
+                    );
+
+                    World.add(app_world, ingred);
                     break;
                 case "milktea":
+                    now_y =
+                        now_y -
+                        (ingredients_info.milktea.radius * 2 +
+                            ingredients_info.milktea.gap) *
+                            ingredients_info.milktea.rows;
+                    console.log("milktea adding");
+                    var ingred = getMilkTea(
+                        0,
+                        WORLD_HEIGHT - max_water_level,
+                        WORLD_WIDTH /
+                            (ingredients_info.milktea.radius * 2 +
+                                ingredients_info.milktea.gap),
+                        Math.floor(
+                            (max_water_level - (WORLD_HEIGHT - now_y)) /
+                                (ingredients_info.milktea.radius +
+                                    ingredients_info.milktea.gap)
+                        )
+                    );
+
+                    World.add(app_world, ingred);
+                    console.log(
+                        0,
+                        WORLD_HEIGHT - max_water_level,
+                        WORLD_WIDTH /
+                            (ingredients_info.milktea.radius * 2 +
+                                ingredients_info.milktea.gap),
+                        Math.floor(
+                            (max_water_level - (WORLD_HEIGHT - now_y)) /
+                                (ingredients_info.milktea.radius +
+                                    ingredients_info.milktea.gap)
+                        )
+                    );
+
+                    console.log("milktea added");
                     break;
                 case "chocolatesmoothie":
+                    now_y =
+                        now_y -
+                        (ingredients_info.chocolatesmoothie.radius * 2 +
+                            ingredients_info.chocolatesmoothie.gap) *
+                            ingredients_info.chocolatesmoothie.rows;
+                    var ingred = getChocolateSmoothie(
+                        0,
+                        now_y,
+                        WORLD_WIDTH /
+                            (ingredients_info.chocolatesmoothie.radius * 2 +
+                                ingredients_info.chocolatesmoothie.gap),
+                        Math.floor(
+                            ingredients_info.chocolatesmoothie.rows * scale
+                        )
+                    );
+
+                    World.add(app_world, ingred);
                     break;
                 case "milktop":
+                    now_y =
+                        now_y -
+                        (ingredients_info.milktop.radius * 2 +
+                            ingredients_info.milktop.gap) *
+                            ingredients_info.milktop.rows;
+                    var ingred = getMilkTop(
+                        0,
+                        now_y,
+                        WORLD_WIDTH /
+                            (ingredients_info.milktop.radius * 2 +
+                                ingredients_info.milktop.gap),
+                        Math.floor(ingredients_info.milktop.rows * scale)
+                    );
+
+                    World.add(app_world, ingred);
                     break;
 
                 default:
@@ -460,8 +557,9 @@ BeerSimulator.mixed = function () {
         }
     );
 
-    World.add(_world, stack);
-    World.add(_world, cream);
+    // World.add(_world, stack);
+    // World.add(_world, cream);
+    makeBeverage(_world);
     // setTimeout(function () {
     //     World.add(_world, cream);
     // }, 0);
