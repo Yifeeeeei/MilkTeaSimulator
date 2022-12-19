@@ -19,12 +19,12 @@ const ALL_INGREDIENTS = [
 ];
 
 const ingredients_info = {
-    pearl: { radius: 50, gap: 5, rows: 5 },
-    westrice: { radius: 10, gap: 3, rows: 6 },
-    lemonade: { radius: 40, gap: 0, rows: -1 },
-    milktea: { radius: 40, gap: 0, rows: -1 },
-    chocolatesmoothie: { radius: 40, gap: 0, rows: -1 },
-    milktop: { radius: 30, gap: 0, rows: 12 },
+    pearl: { radius: 50, gap: 2, rows: 2 },
+    westrice: { radius: 10, gap: 3, rows: 2 },
+    lemonade: { radius: 30, gap: 0, rows: -1 },
+    milktea: { radius: 30, gap: 0, rows: -1 },
+    chocolatesmoothie: { radius: 30, gap: 0, rows: -1 },
+    milktop: { radius: 20, gap: 0, rows: 5 },
 };
 
 var Engine = Matter.Engine,
@@ -160,12 +160,12 @@ function getMilkTea(xx, yy, columns, rows) {
                 x,
                 y,
                 Math.round(Common.random(6, 12)),
-                ingredients_info.milktea.radius + Common.random(-10, 10),
+                ingredients_info.milktea.radius,
                 { friction: 0.01, restitution: 0.4 }
             );
 
-            body.render.fillStyle = "#b6a28c";
-            body.render.strokeStyle = "#b6a28c";
+            body.render.fillStyle = "#F3CFB3";
+            body.render.strokeStyle = "#F3CFB3";
 
             return body;
         }
@@ -227,7 +227,7 @@ function getLemonade(xx, yy, columns, rows) {
 }
 
 function getMilkTop(xx, yy, columns, rows) {
-    var ingredient = Composites.pyramid(
+    var ingredient = Composites.stack(
         xx,
         yy,
         columns,
@@ -303,8 +303,8 @@ function getWestRice(xx, yy, columns, rows) {
                 }
             );
 
-            body.render.fillStyle = "#000000";
-            body.render.strokeStyle = "#FFFFFF";
+            body.render.fillStyle = "#FFFFFF";
+            body.render.strokeStyle = "#777777";
 
             body.density = 0.0015;
 
@@ -355,7 +355,7 @@ function estimateHeightPassed(max_water_level, scale = 1) {
 
 // make beverage
 function makeBeverage(app_world) {
-    const max_water_level = WORLD_HEIGHT * 0.7;
+    const max_water_level = WORLD_HEIGHT * 0.8;
     var now_y = WORLD_HEIGHT;
     var scale = 1;
     while (!estimateHeightPassed(max_water_level, scale)) {
@@ -405,15 +405,19 @@ function makeBeverage(app_world) {
                         (ingredients_info.lemonade.radius * 2 +
                             ingredients_info.lemonade.gap) *
                             ingredients_info.lemonade.rows;
+                    console.log("milktea adding");
                     var ingred = getLemonade(
                         0,
-                        now_y,
+                        WORLD_HEIGHT - max_water_level,
                         WORLD_WIDTH /
                             (ingredients_info.lemonade.radius * 2 +
                                 ingredients_info.lemonade.gap),
-                        Math.floor(ingredients_info.lemonade.rows * scale)
+                        Math.floor(
+                            (max_water_level - (WORLD_HEIGHT - now_y)) /
+                                (ingredients_info.lemonade.radius +
+                                    ingredients_info.lemonade.gap)
+                        )
                     );
-
                     World.add(app_world, ingred);
                     break;
                 case "milktea":
@@ -422,7 +426,6 @@ function makeBeverage(app_world) {
                         (ingredients_info.milktea.radius * 2 +
                             ingredients_info.milktea.gap) *
                             ingredients_info.milktea.rows;
-                    console.log("milktea adding");
                     var ingred = getMilkTea(
                         0,
                         WORLD_HEIGHT - max_water_level,
@@ -435,22 +438,7 @@ function makeBeverage(app_world) {
                                     ingredients_info.milktea.gap)
                         )
                     );
-
                     World.add(app_world, ingred);
-                    console.log(
-                        0,
-                        WORLD_HEIGHT - max_water_level,
-                        WORLD_WIDTH /
-                            (ingredients_info.milktea.radius * 2 +
-                                ingredients_info.milktea.gap),
-                        Math.floor(
-                            (max_water_level - (WORLD_HEIGHT - now_y)) /
-                                (ingredients_info.milktea.radius +
-                                    ingredients_info.milktea.gap)
-                        )
-                    );
-
-                    console.log("milktea added");
                     break;
                 case "chocolatesmoothie":
                     now_y =
@@ -460,15 +448,16 @@ function makeBeverage(app_world) {
                             ingredients_info.chocolatesmoothie.rows;
                     var ingred = getChocolateSmoothie(
                         0,
-                        now_y,
+                        WORLD_HEIGHT - max_water_level,
                         WORLD_WIDTH /
                             (ingredients_info.chocolatesmoothie.radius * 2 +
                                 ingredients_info.chocolatesmoothie.gap),
                         Math.floor(
-                            ingredients_info.chocolatesmoothie.rows * scale
+                            (max_water_level - (WORLD_HEIGHT - now_y)) /
+                                (ingredients_info.chocolatesmoothie.radius +
+                                    ingredients_info.chocolatesmoothie.gap)
                         )
                     );
-
                     World.add(app_world, ingred);
                     break;
                 case "milktop":
@@ -479,7 +468,11 @@ function makeBeverage(app_world) {
                             ingredients_info.milktop.rows;
                     var ingred = getMilkTop(
                         0,
-                        now_y,
+                        WORLD_HEIGHT -
+                            max_water_level -
+                            (ingredients_info.milktop.radius * 2 +
+                                ingredients_info.milktop.gap) *
+                                ingredients_info.milktop.rows,
                         WORLD_WIDTH /
                             (ingredients_info.milktop.radius * 2 +
                                 ingredients_info.milktop.gap),
