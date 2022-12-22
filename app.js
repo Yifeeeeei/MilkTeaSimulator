@@ -21,8 +21,11 @@ const ALL_INGREDIENTS = [
     "chocolatesmoothie",
     "milktop",
 ];
+
 const color_card = {
     milktea: "rgba(243,207,179,0.5)",
+    lemonade: "rgba(207,207,207,0.5)",
+    chocolatesmoothie: "rgba(68,43,25,0.5)",
 };
 let tea_base_color = null;
 
@@ -803,7 +806,7 @@ BeerSimulator.mixed = function () {
 
     // World.add(_world, stack);
     // World.add(_world, cream);
-    // makeBeverage(_world);
+    makeBeverage(_world);
     // setTimeout(function () {
     //     World.add(_world, cream);
     // }, 0);
