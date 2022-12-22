@@ -292,7 +292,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                         [0, WORLD_HEIGHT],
                         [0, 0],
                         [WORLD_WIDTH, 0],
-                        [WORLD_WIDTH * k + WORLD_HEIGHT],
+                        [WORLD_WIDTH, WORLD_WIDTH * k + WORLD_HEIGHT],
                     ];
                 } else {
                     // need to calculate a ladder
@@ -304,7 +304,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                         [0, b],
                         [0, 0],
                         [WORLD_WIDTH, 0],
-                        [WORLD_WIDTH * k + b, 0],
+                        [WORLD_WIDTH, WORLD_WIDTH * k + b],
                     ];
                 }
             }
