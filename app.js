@@ -80,7 +80,6 @@ function draw_polygon(target_canvas, list_of_points, color) {
     }
     ctx.closePath();
     ctx.fill();
-    console.log(list_of_points);
 }
 
 BeerSimulator.init = function () {
@@ -138,13 +137,6 @@ BeerSimulator.init = function () {
                 gravity_VEC_X,
                 gravity_VEC_Y
             );
-            console.log(tea_base_color);
-
-            // var ctx = _engine.render.canvas.getContext("2d");
-            // ctx.fillStyle = tea_base_color;
-            // // //绘制矩形
-            // ctx.fillRect(30, 40, 55, 50);
-            // console.log(tea_base_color);
 
             draw_polygon(_engine.render.canvas, water_cords, tea_base_color);
 
@@ -392,7 +384,6 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
 
 function get_four_water_level_screen_cords(gravity_VEC_X, gravity_VEC_Y) {
     const result = get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y);
-    // console.log(result);
 
     if (result == null) {
         return null;
@@ -812,7 +803,7 @@ BeerSimulator.mixed = function () {
 
     // World.add(_world, stack);
     // World.add(_world, cream);
-    makeBeverage(_world);
+    // makeBeverage(_world);
     // setTimeout(function () {
     //     World.add(_world, cream);
     // }, 0);
@@ -858,19 +849,22 @@ BeerSimulator.updateGravity = function (event) {
     var orientation = window.orientation,
         gravity = _engine.world.gravity;
 
-    if (orientation === 0) {
-        gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
-        gravity.y = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
-    } else if (orientation === 180) {
-        gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
-        gravity.y = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
-    } else if (orientation === 90) {
-        gravity.x = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
-        gravity.y = (GRAVITY * Common.clamp(-event.gamma, -90, 90)) / 90;
-    } else if (orientation === -90) {
-        gravity.x = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
-        gravity.y = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
-    }
+    gravity.x = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
+    gravity.y = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+
+    // if (orientation === 0) {
+    //     gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+    //     gravity.y = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
+    // } else if (orientation === 180) {
+    //     gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+    //     gravity.y = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
+    // } else if (orientation === 90) {
+    //     gravity.x = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
+    //     gravity.y = (GRAVITY * Common.clamp(-event.gamma, -90, 90)) / 90;
+    // } else if (orientation === -90) {
+    //     gravity.x = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
+    //     gravity.y = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+    // }
 };
 
 BeerSimulator.fullscreen = function () {
