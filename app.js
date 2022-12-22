@@ -278,7 +278,11 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                 0.5 * (-WORLD_WIDTH * k) * WORLD_WIDTH;
             if (water_left_in_bottle <= threshold_triangle_area) {
                 const b = Math.sqrt(-2 * k * water_left_in_bottle);
-                return [[0, b], [0, 0], [-b / k]];
+                return [
+                    [0, b],
+                    [0, 0],
+                    [-b / k, 0],
+                ];
             } else {
                 // should be a ladder shape
                 const threshold_ladder_area =
@@ -286,6 +290,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                     (WORLD_HEIGHT + WORLD_WIDTH * k + WORLD_HEIGHT) *
                     WORLD_WIDTH;
                 if (water_left_in_bottle >= threshold_ladder_area) {
+                    console.log("5");
                     // water overflow, leaving only the cords of the ladder
                     water_left_in_bottle = threshold_ladder_area;
                     return [
@@ -325,7 +330,6 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
             if (water_left_in_bottle >= threshold_triangle_area) {
                 // overflow
                 water_left_in_bottle = threshold_triangle_area;
-                const b = h - WORLD_WIDTH * k;
                 return [
                     [WORLD_WIDTH - WORLD_HEIGHT / k, 0],
                     [WORLD_WIDTH, 0],
