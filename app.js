@@ -5,9 +5,13 @@
 // Matter aliases
 // the gloabl param for gravity
 const GRAVITY = 2.0;
+
 // window size
-const WORLD_WIDTH = document.documentElement.clientWidth;
-const WORLD_HEIGHT = document.documentElement.clientHeight;
+let WORLD_WIDTH = document.documentElement.clientWidth;
+let WORLD_HEIGHT = document.documentElement.clientHeight;
+
+//
+let water_left_in_bottle = WORLD_HEIGHT * WORLD_WIDTH;
 // all available ingredients, from bottom to top
 const ALL_INGREDIENTS = [
     "pearl",
@@ -17,6 +21,10 @@ const ALL_INGREDIENTS = [
     "chocolatesmoothie",
     "milktop",
 ];
+const color_card = {
+    milktea: "rgba(243,207,179,0.5)",
+};
+let tea_base_color = null;
 
 const ingredients_info = {
     pearl: { radius: 50, gap: 2, rows: 2 },
@@ -58,6 +66,23 @@ function getIngredients() {
     console.log(ingredients);
 }
 
+function draw_polygon(target_canvas, list_of_points, color) {
+    if (list_of_points == null || list_of_points.length == 0) {
+        return;
+    }
+    var ctx = target_canvas.getContext("2d");
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(list_of_points[0][0], list_of_points[0][1]);
+
+    for (var i = 1; i < list_of_points.length; i++) {
+        ctx.lineTo(list_of_points[i][0], list_of_points[i][1]);
+    }
+    ctx.closePath();
+    ctx.fill();
+    console.log(list_of_points);
+}
+
 BeerSimulator.init = function () {
     var canvasContainer = document.getElementById("body"),
         demoStart = document.getElementById("button-start");
@@ -92,34 +117,67 @@ BeerSimulator.init = function () {
 
         Matter.Events.on(_engine.render, "afterRender", function () {
             // engineRef.push({ world: _engine.world });
+            // var ctx1 = _engine.render.canvas.getContext("2d");
+            // ctx1.fillStyle = "rgb(200,0,0)";
+            // //绘制矩形
+            // ctx1.fillRect(10, 10, 55, 50);
 
-            for (
-                var i = 0;
-                i < _engine.world.composites[0].bodies.length;
-                i++
-            ) {
-                if (_engine.world.composites[0].bodies[i].bounds.max.y < 0) {
-                    // _engine.world.composites[0].bodies[i].render.visible = false;
-                    Matter.Composite.remove(
-                        _engine.world.composites[0],
-                        _engine.world.composites[0].bodies[i]
-                    );
+            // ctx1.fillStyle = "rgba(0, 0, 200, 0.5)";
+            // ctx1.fillRect(30, 30, 55, 50);
+            if (tea_base_color == null) {
+                for (var k in color_card) {
+                    if (ingredients.indexOf(k) != -1) {
+                        tea_base_color = color_card[k];
+                    }
                 }
             }
 
-            for (
-                var i = 0;
-                i < _engine.world.composites[1].bodies.length;
-                i++
-            ) {
-                if (_engine.world.composites[1].bodies[i].bounds.max.y < 0) {
-                    // _engine.world.composites[0].bodies[i].render.visible = false;
-                    Matter.Composite.remove(
-                        _engine.world.composites[1],
-                        _engine.world.composites[1].bodies[i]
-                    );
+            const gravity_VEC_X = _engine.world.gravity.x;
+            const gravity_VEC_Y = _engine.world.gravity.y;
+            let water_cords = get_four_water_level_screen_cords(
+                gravity_VEC_X,
+                gravity_VEC_Y
+            );
+            console.log(tea_base_color);
+
+            // var ctx = _engine.render.canvas.getContext("2d");
+            // ctx.fillStyle = tea_base_color;
+            // // //绘制矩形
+            // ctx.fillRect(30, 40, 55, 50);
+            // console.log(tea_base_color);
+
+            draw_polygon(_engine.render.canvas, water_cords, tea_base_color);
+
+            for (var j = 0; j < _engine.world.composites.length; j++)
+                for (
+                    var i = 0;
+                    i < _engine.world.composites[0].bodies.length;
+                    i++
+                ) {
+                    if (
+                        _engine.world.composites[0].bodies[i].bounds.max.y < 0
+                    ) {
+                        // _engine.world.composites[0].bodies[i].render.visible = false;
+                        Matter.Composite.remove(
+                            _engine.world.composites[0],
+                            _engine.world.composites[0].bodies[i]
+                        );
+                    }
                 }
-            }
+
+            // for (
+            //     var i = 0;
+            //     i < _engine.world.composites[1].bodies.length;
+            //     i++
+            // ) {
+            //     if (_engine.world.composites[1].bodies[i].bounds.max.y < 0) {
+            //         // _engine.world.composites[0].bodies[i].render.visible = false;
+            //         Matter.Composite.remove(
+            //             _engine.world.composites[1],
+            //             _engine.world.composites[1].bodies[i]
+            //         );
+            //     }
+            // }
         });
     });
 
@@ -146,6 +204,207 @@ BeerSimulator.init = function () {
 };
 
 window.addEventListener("load", BeerSimulator.init);
+
+// water level part
+
+// convert onscreen cord X to axis cord x
+function X_to_x(X) {
+    return X;
+}
+function x_to_X(x) {
+    return x;
+}
+
+// convert onscreen cord Y to axis cord y
+function Y_to_y(Y) {
+    return WORLD_HEIGHT - Y;
+}
+function y_to_Y(y) {
+    return WORLD_HEIGHT - y;
+}
+
+function VEC_to_vec(X, Y) {
+    return [X, -Y];
+}
+function vec_to_VEC(x, y) {
+    return [x, -y];
+}
+
+function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
+    if (water_left_in_bottle == 0) {
+        return null;
+    }
+    let gravity_vec_x, gravity_vec_y;
+    let res = VEC_to_vec(gravity_VEC_X, gravity_VEC_Y);
+
+    gravity_vec_x = res[0];
+    gravity_vec_y = res[1];
+    if (gravity_vec_x == 0) {
+        if (gravity_vec_y >= 0) {
+            return null;
+        } else if (gravity_vec_y < 0) {
+            const h = water_left_in_bottle / WORLD_WIDTH;
+
+            return [
+                [0, h],
+                [0, 0],
+                [WORLD_WIDTH, 0],
+                [WORLD_WIDTH, h],
+            ];
+        }
+    } else if (gravity_vec_x < 0) {
+        if (gravity_vec_y >= 0) {
+            water_left_in_bottle = 0;
+            return null;
+        }
+        // gravity_vec_y < 0
+        // calculate threshold k, the k for the water level to went from top left to bottom right
+        const threshold_k = (0 - WORLD_HEIGHT) / (WORLD_WIDTH - 0);
+        const k = -1 / (gravity_vec_y / gravity_vec_x);
+        if (k <= threshold_k) {
+            // calculate threshold triangle area
+            const threshold_triangle_area =
+                0.5 * (-WORLD_HEIGHT / k) * WORLD_HEIGHT;
+            if (water_left_in_bottle >= threshold_triangle_area) {
+                water_left_in_bottle = threshold_triangle_area;
+                // water over flow, leaving threshold points
+                return [
+                    [0, WORLD_HEIGHT],
+                    [0, 0],
+                    [-WORLD_HEIGHT / k, 0],
+                ];
+            } else if (water_left_in_bottle < threshold_triangle_area) {
+                const b = Math.sqrt(-2 * k * water_left_in_bottle);
+                return [[0, b], [0, 0], [-b / k]];
+            }
+        } else if (k > threshold_k) {
+            // threshold triangle area
+            const threshold_triangle_area =
+                0.5 * (-WORLD_WIDTH * k) * WORLD_WIDTH;
+            if (water_left_in_bottle <= threshold_triangle_area) {
+                const b = Math.sqrt(-2 * k * water_left_in_bottle);
+                return [[0, b], [0, 0], [-b / k]];
+            } else {
+                // should be a ladder shape
+                const threshold_ladder_area =
+                    0.5 *
+                    (WORLD_HEIGHT + WORLD_WIDTH * k + WORLD_HEIGHT) *
+                    WORLD_WIDTH;
+                if (water_left_in_bottle >= threshold_ladder_area) {
+                    // water overflow, leaving only the cords of the ladder
+                    water_left_in_bottle = threshold_ladder_area;
+                    return [
+                        [0, WORLD_WIDTH],
+                        [0, 0],
+                        [WORLD_WIDTH, 0],
+                        [WORLD_WIDTH * k + WORLD_HEIGHT],
+                    ];
+                } else {
+                    // need to calculate a ladder
+                    const b =
+                        0.5 *
+                        ((2 * water_left_in_bottle) / WORLD_WIDTH -
+                            WORLD_WIDTH * k);
+                    return [
+                        [0, b],
+                        [0, 0],
+                        [WORLD_WIDTH, 0],
+                        [WORLD_WIDTH * k + b, 0],
+                    ];
+                }
+            }
+        }
+    } else if (gravity_vec_x > 0) {
+        // last condition
+        if (gravity_vec_y >= 0) {
+            return null;
+        }
+
+        // gravity_vec_y < 0
+        const threshold_k = WORLD_HEIGHT / WORLD_WIDTH;
+        const k = -1 / (gravity_vec_y / gravity_vec_x);
+        if (k >= threshold_k) {
+            // should be a triangle here
+            const threshold_triangle_area =
+                0.5 * (WORLD_HEIGHT / k) * WORLD_HEIGHT;
+            if (water_left_in_bottle >= threshold_triangle_area) {
+                // overflow
+                water_left_in_bottle = threshold_triangle_area;
+                const b = h - WORLD_WIDTH * k;
+                return [
+                    [WORLD_WIDTH - WORLD_HEIGHT / k, 0],
+                    [WORLD_WIDTH, 0],
+                    [WORLD_WIDTH, WORLD_HEIGHT],
+                ];
+            } else {
+                // b < 0
+                const b =
+                    Math.sqrt(2 * k * water_left_in_bottle) - WORLD_WIDTH * k;
+                return [
+                    [-(b / k), 0],
+                    [WORLD_WIDTH, 0],
+                    [WORLD_WIDTH, k * WORLD_WIDTH + b],
+                ];
+            }
+        } else {
+            // k < threshold_k
+            const threshold_triangle_area =
+                0.5 * WORLD_WIDTH * (k * WORLD_WIDTH);
+            if (water_left_in_bottle <= threshold_triangle_area) {
+                const b =
+                    Math.sqrt(2 * k * water_left_in_bottle) - WORLD_WIDTH * k;
+                return [
+                    [-b / k, 0],
+                    [WORLD_WIDTH, 0],
+                    [WORLD_WIDTH, k * WORLD_WIDTH + b],
+                ];
+            } else {
+                // water_left_in bottle > threshold_triangle_area
+                const threshold_ladder_area =
+                    0.5 *
+                    (WORLD_HEIGHT - k * WORLD_WIDTH + WORLD_HEIGHT) *
+                    WORLD_WIDTH;
+                if (water_left_in_bottle >= threshold_ladder_area) {
+                    // overflow
+                    water_left_in_bottle = threshold_ladder_area;
+                    return [
+                        [0, WORLD_HEIGHT - k * WORLD_WIDTH],
+                        [0, 0],
+                        [WORLD_WIDTH, 0],
+                        [WORLD_WIDTH, WORLD_HEIGHT],
+                    ];
+                } else {
+                    // should be in the shape of a ladder
+                    const b =
+                        water_left_in_bottle / WORLD_WIDTH -
+                        (WORLD_WIDTH * k) / 2;
+                    return [
+                        [0, b],
+                        [0, 0],
+                        [WORLD_WIDTH, 0],
+                        [WORLD_WIDTH, k * WORLD_WIDTH + b],
+                    ];
+                }
+            }
+        }
+    }
+}
+
+function get_four_water_level_screen_cords(gravity_VEC_X, gravity_VEC_Y) {
+    const result = get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y);
+    // console.log(result);
+
+    if (result == null) {
+        return null;
+    }
+    let vec_results = [];
+    for (var i = 0; i < result.length; i++) {
+        vec_results.push([x_to_X(result[i][0]), y_to_Y(result[i][1])]);
+    }
+    return vec_results;
+}
+
+////////////////////////////////////////////////////////////////
 
 function getMilkTea(xx, yy, columns, rows) {
     var ingredient = Composites.stack(
@@ -496,6 +755,7 @@ BeerSimulator.mixed = function () {
     var _world = _engine.world;
     // init gravity
     _world.gravity.y = GRAVITY;
+
     // mixup the ingredients
 
     BeerSimulator.reset();
@@ -558,6 +818,16 @@ BeerSimulator.mixed = function () {
     // }, 0);
 };
 
+// Events.on(_engine.render, "afterRender", function () {
+//     var ctx = canvas.getContext("2d");
+//     ctx.fillStyle = "rgb(200,0,0)";
+//     //绘制矩形
+//     ctx.fillRect(10, 10, 55, 50);
+
+//     ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
+//     ctx.fillRect(30, 30, 55, 50);
+// });
+
 BeerSimulator.updateScene = function () {
     if (!_engine) return;
     _sceneWidth = document.documentElement.clientWidth;
@@ -572,6 +842,8 @@ BeerSimulator.updateScene = function () {
 
     canvas.width = renderOptions.width = _sceneWidth;
     canvas.height = renderOptions.height = _sceneHeight;
+    WORLD_HEIGHT = _sceneHeight;
+    WORLD_WIDTH = _sceneWidth;
 
     BeerSimulator[_sceneName]();
 };
