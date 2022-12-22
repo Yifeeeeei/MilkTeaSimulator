@@ -286,7 +286,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                     // water overflow, leaving only the cords of the ladder
                     water_left_in_bottle = threshold_ladder_area;
                     return [
-                        [0, WORLD_WIDTH],
+                        [0, WORLD_HEIGHT],
                         [0, 0],
                         [WORLD_WIDTH, 0],
                         [WORLD_WIDTH * k + WORLD_HEIGHT],
@@ -849,22 +849,19 @@ BeerSimulator.updateGravity = function (event) {
     var orientation = window.orientation,
         gravity = _engine.world.gravity;
 
-    gravity.x = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
-    gravity.y = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
-
-    // if (orientation === 0) {
-    //     gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
-    //     gravity.y = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
-    // } else if (orientation === 180) {
-    //     gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
-    //     gravity.y = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
-    // } else if (orientation === 90) {
-    //     gravity.x = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
-    //     gravity.y = (GRAVITY * Common.clamp(-event.gamma, -90, 90)) / 90;
-    // } else if (orientation === -90) {
-    //     gravity.x = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
-    //     gravity.y = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
-    // }
+    if (orientation === 0) {
+        gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+        gravity.y = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
+    } else if (orientation === 180) {
+        gravity.x = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+        gravity.y = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
+    } else if (orientation === 90) {
+        gravity.x = (GRAVITY * Common.clamp(event.beta, -90, 90)) / 90;
+        gravity.y = (GRAVITY * Common.clamp(-event.gamma, -90, 90)) / 90;
+    } else if (orientation === -90) {
+        gravity.x = (GRAVITY * Common.clamp(-event.beta, -90, 90)) / 90;
+        gravity.y = (GRAVITY * Common.clamp(event.gamma, -90, 90)) / 90;
+    }
 };
 
 BeerSimulator.fullscreen = function () {
