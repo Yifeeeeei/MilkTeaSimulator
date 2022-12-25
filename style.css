@@ -1,0 +1,73 @@
+#all {
+    height: 100%;
+}
+/* .title_wrapper {
+    align-items: center;
+} */
+#title {
+    border: 2px solid black;
+    height: 10%;
+    text-align: center;
+}
+#container {
+    width: 100%;
+    display: flex;
+    height: 80%;
+    /* border: 2px solid green; */
+}
+#left_part {
+    float: left;
+    width: 10%;
+    overflow-y: scroll;
+
+    /* height: 100%; */
+    border: 1px solid blue;
+}
+#right_part {
+    float: left;
+    overflow-y: scroll;
+    /* width: 73vw; */
+    position: relative;
+    flex: 1;
+
+    /* height: 100%; */
+    border: 1px solid red;
+}
+
+.teabase_selector_wrapper {
+    text-align: center;
+    margin: 10px;
+}
+.ingredients_selector_wrapper {
+    text-align: center;
+    margin: 10px;
+}
+.class_selector {
+    text-align: center;
+    position: relative;
+}
+.class_selector > img {
+    width: 100%;
+}
+#button-start {
+    height: 10%;
+    /* width: 80%; */
+    text-align: center;
+    background-color: orange;
+    /* position: absolute; */
+    border: 2px solid black;
+}
+input {
+    left: 0;
+    position: absolute;
+}
+.teabase_selector_wrapper,
+.ingredients_selector_wrapper {
+    text-align: center;
+    height: 10%;
+}
+.sample_pics {
+    width: 50px;
+    position: absolute;
+    right: 0px;
+}

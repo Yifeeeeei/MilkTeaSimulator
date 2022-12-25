@@ -1,69 +1,129 @@
 <html>
     <head>
         <script src="matter.js" type="text/javascript" charset="utf-8"></script>
+        <link rel="stylesheet" href="./style.css" />
     </head>
     <body id="body">
-        <!-- ingredients here -->
-        <div id="title">if奶茶 v1</div>
-        <div id="choose_ingredient">请选择配料</div>
-        <div id="teabase">
-            <div id="teabase_title">茶底</div>
-            <input
-                class="ingredients_selector"
-                id="teabase_milktea"
-                type="radio"
-                name="teabase"
-                value="milktea"
-                checked
-            />
-            <label for="teabase_milktea">传统奶茶</label>
-            <input
-                class="ingredients_selector"
-                id="teabase_chocolatesmoothie"
-                type="radio"
-                name="teabase"
-                value="chocolatesmoothie"
-            />
-            <label for="teabase_chocolatesmoothie">巧克力冰沙</label>
-            <input
-                class="ingredients_selector"
-                id="teabase_lemonade"
-                type="radio"
-                name="teabase"
-                value="lemonade"
-            />
-            <label for="teabase_lemonade">柠檬水</label>
+        <div id="all">
+            <div class="title_wrapper">
+                <div id="title">if奶茶 v1</div>
+            </div>
+            <div id="container">
+                <div id="left_part">
+                    <div class="class_selector" id="class_selector_teabase">
+                        <img src="./pics/teabase.svg" alt="" />
+                        <p>奶茶</p>
+                    </div>
+                    <div class="class_selector" id="class_selector_addings">
+                        <img src="./pics/addings.svg" alt="" />
+                        <p>加料</p>
+                    </div>
+                </div>
+
+                <div id="right_part">
+                    <div id="selectors">
+                        <div id="teabase">
+                            <!-- <div id="teabase_title">茶底</div> -->
+                            <p class="teabase_selector_wrapper">
+                                <input
+                                    class="teabase_selector"
+                                    id="teabase_milktea"
+                                    type="radio"
+                                    name="teabase"
+                                    value="milktea"
+                                    checked
+                                />
+                                <img
+                                    src="./pics/milktea.jpeg"
+                                    alt=""
+                                    class="sample_pics"
+                                />
+                                <label for="teabase_milktea">传统奶茶</label>
+                            </p>
+                            <p class="teabase_selector_wrapper">
+                                <input
+                                    class="teabase_selector"
+                                    id="teabase_chocolatesmoothie"
+                                    type="radio"
+                                    name="teabase"
+                                    value="chocolatesmoothie"
+                                />
+                                <img
+                                    src="./pics/chocolate_smoothie.jpeg"
+                                    alt=""
+                                    class="sample_pics"
+                                />
+                                <label for="teabase_chocolatesmoothie"
+                                    >巧克力冰沙</label
+                                >
+                            </p>
+                            <p class="teabase_selector_wrapper">
+                                <input
+                                    class="teabase_selector"
+                                    id="teabase_lemonade"
+                                    type="radio"
+                                    name="teabase"
+                                    value="lemonade"
+                                />
+                                <img
+                                    src="./pics/lemonade.webp"
+                                    alt=""
+                                    class="sample_pics"
+                                />
+                                <label for="teabase_lemonade">柠檬水</label>
+                            </p>
+                        </div>
+
+                        <div id="addings">
+                            <div class="ingredients_selector_wrapper">
+                                <input
+                                    class="ingredients_selector"
+                                    id="addings_passionfruit"
+                                    type="checkbox"
+                                    value="passionfruit"
+                                />
+                                <img
+                                    src="./pics/passionfruit.jpeg"
+                                    alt=""
+                                    class="sample_pics"
+                                />
+                                <label for="addings_passionfruit">百香果</label>
+                            </div>
+
+                            <div class="ingredients_selector_wrapper">
+                                <input
+                                    class="ingredients_selector"
+                                    id="addings_pearl"
+                                    type="checkbox"
+                                    value="pearl"
+                                /><img
+                                    src="./pics/pearl.jpeg"
+                                    alt=""
+                                    class="sample_pics"
+                                /><label for="addings_pearl">珍珠</label>
+                            </div>
+                            <div class="ingredients_selector_wrapper">
+                                <input
+                                    class="ingredients_selector"
+                                    id="addings_westrice"
+                                    type="checkbox"
+                                    value="westrice"
+                                /><img
+                                    src="./pics/westrice.jpeg"
+                                    alt=""
+                                    class="sample_pics"
+                                /><label for="addings_westrice">西米</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div id="button-start">下单!</div>
         </div>
 
-        <div id="addings">
-            <div id="" addings_title>加料</div>
-            <div>
-                <input
-                    class="ingredients_selector"
-                    id="addings_milktop"
-                    type="checkbox"
-                    value="milktop"
-                />奶盖
-            </div>
-            <div>
-                <input
-                    class="ingredients_selector"
-                    id="addings_pearl"
-                    type="checkbox"
-                    value="pearl"
-                />珍珠
-            </div>
-            <div>
-                <input
-                    class="ingredients_selector"
-                    id="addings_westrice"
-                    type="checkbox"
-                    value="westrice"
-                />西米
-            </div>
-        </div>
+        <!-- <input id="button-start" value="选好了，下单！" type="submit" /> -->
+        <!-- <img src="./pics/order.svg" alt="" id="button-start" /> -->
 
-        <input id="button-start" value="选好了，下单！" type="submit" />
         <script src="app.js" type="text/javascript" charset="utf-8"></script>
     </body>
 </html>
