@@ -1,0 +1,20 @@
+/* 单选框 的默认样式 */
+.dot {
+    margin: 0 5px;
+    /* appearance属性 为none去除该标签的默认样式，保留其原有功能 */
+    appearance: none;
+    display: block;
+
+    outline: none;
+    /* background-color: rgba(0, 0, 0, 0.5); */
+    border: 1px solid yellow;
+    border-radius: 50%;
+    width: 16px;
+    height: 16px;
+    transition: all 0.2s;
+}
+/* 设置 单选框 被选中后的样式 */
+.dot:checked {
+    background-color: yellow;
+    transition: all 0.2s;
+}
