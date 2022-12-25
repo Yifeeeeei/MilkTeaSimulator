@@ -103,5 +103,6 @@ label {
 }
 
 .selected {
-    background-color: rgba(255, 99, 71, 0.568);
+    /* background-color: rgba(255, 99, 71, 0.568); */
+    border: 5px solid cyan;
 }
