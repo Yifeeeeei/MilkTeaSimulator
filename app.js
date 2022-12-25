@@ -12,23 +12,20 @@ let WORLD_HEIGHT = document.documentElement.clientHeight;
 
 //
 let water_left_in_bottle = WORLD_HEIGHT * WORLD_WIDTH;
-// all available ingredients, from bottom to top
-const ALL_INGREDIENTS = ["pearl", "westrice", "passionfruit"];
 
 const color_card = {
     milktea: "rgba(243,207,179,0.5)",
     lemonade: "rgba(207,207,207,0.5)",
     chocolatesmoothie: "rgba(68,43,25,0.5)",
+    passionfruitdoublebang: "rgba(222,195,2,0.5)",
 };
 let tea_base = null;
 
 const ingredients_info = {
     pearl: { radius: 50, gap: 2, rows: 2 },
     westrice: { radius: 10, gap: 3, rows: 2 },
-    lemonade: { radius: 30, gap: 0, rows: -1 },
-    milktea: { radius: 30, gap: 0, rows: -1 },
-    chocolatesmoothie: { radius: 30, gap: 0, rows: -1 },
     passionfruit: { radius: 5, gap: 0, rows: 5 },
+    coconutfruit: { radius: 30, gap: 3, rows: 3 },
 };
 
 var Engine = Matter.Engine,
@@ -49,7 +46,30 @@ var _engine,
 function getTeaBase() {
     var teabase_selectors = document.getElementsByClassName("teabase_selector");
     console.log(teabase_selectors.length);
-    tea_base = teabase_selectors[0].value;
+    tea_base = "milktea";
+    for (let i = 0; i < teabase_selectors.length; i++) {
+        let teabase_input = teabase_selectors[i];
+        if (teabase_input.hasAttribute("checked")) {
+            tea_base = teabase_input.value;
+            break;
+        }
+    }
+
+    // add ingrediends
+
+    switch (tea_base) {
+        case "milktea":
+            break;
+        case "lemonade":
+            break;
+        case "chocolatesmoothie":
+            break;
+        case "passionfruitdoublebang":
+            ingredients.push("passionfruit");
+            ingredients.push("coconutfruit");
+            break;
+    }
+
     console.log(tea_base);
 }
 
@@ -91,9 +111,8 @@ BeerSimulator.init = function () {
 
     demoStart.addEventListener("click", function () {
         demoStart.style.display = "none";
-
-        getIngredients();
         getTeaBase();
+        getIngredients();
 
         _engine = Engine.create(canvasContainer, {
             render: {
@@ -481,6 +500,35 @@ function get_four_water_level_screen_cords(gravity_VEC_X, gravity_VEC_Y) {
 //     return ingredient;
 // }
 
+function getCoconutFruit(xx, yy, columns, rows) {
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.coconutfruit.gap,
+        ingredients_info.coconutfruit.gap,
+        function (x, y, column, row) {
+            var body = Bodies.rectangle(
+                x,
+                y,
+                ingredients_info.coconutfruit.radius,
+                ingredients_info.coconutfruit.radius,
+                { friction: 0.01, restitution: 0.4 }
+            );
+
+            body.render.fillStyle = "rgba(255,255,255,0.5)";
+            console.log("transparancy enabled");
+            body.render.strokeStyle = "rgba(255,255,255,0.5)";
+
+            body.density = 0.0005; //default value is 0.001
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
 function getPassionFruit(xx, yy, columns, rows) {
     var ingredient = Composites.stack(
         xx,
@@ -581,25 +629,24 @@ function getWestRice(xx, yy, columns, rows) {
 //     return false;
 // }
 
-function hasIngredient(ingred) {
-    if (ingredients.indexOf(ingred) != -1) {
-        return true;
-    }
-    return false;
-}
+// function hasIngredient(ingred) {
+//     if (ingredients.indexOf(ingred) != -1) {
+//         return true;
+//     }
+//     return false;
+// }
 
 function estimateHeightPassed(max_water_level, scale = 1) {
     height_now = 0;
-    for (var i = 0; i < ALL_INGREDIENTS.length; i++) {
+    for (var i = 0; i < ingredients.length; i++) {
         // go from bottom to top
-        if (hasIngredient(ALL_INGREDIENTS[i])) {
-            height_now +=
-                (ingredients_info[ALL_INGREDIENTS[i]].gap +
-                    2 * ingredients_info[ALL_INGREDIENTS[i]].radius) *
-                Math.floor(ingredients_info[ALL_INGREDIENTS[i]].rows * scale);
-            if (height_now > max_water_level) {
-                return false;
-            }
+
+        height_now +=
+            (ingredients_info[ingredients[i]].gap +
+                2 * ingredients_info[ingredients[i]].radius) *
+            Math.floor(ingredients_info[ingredients[i]].rows * scale);
+        if (height_now > max_water_level) {
+            return false;
         }
     }
     return true;
@@ -614,128 +661,83 @@ function makeBeverage(app_world) {
         scale = scale * 0.5;
     }
     //make it
-    for (var i = 0; i < ALL_INGREDIENTS.length; i++) {
-        if (hasIngredient(ALL_INGREDIENTS[i])) {
-            switch (ALL_INGREDIENTS[i]) {
-                case "pearl":
-                    now_y =
-                        now_y -
+    for (var i = 0; i < ingredients.length; i++) {
+        switch (ingredients[i]) {
+            case "pearl":
+                now_y =
+                    now_y -
+                    (ingredients_info.pearl.radius * 2 +
+                        ingredients_info.pearl.gap) *
+                        ingredients_info.pearl.rows;
+                var ingred = getPearl(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
                         (ingredients_info.pearl.radius * 2 +
-                            ingredients_info.pearl.gap) *
-                            ingredients_info.pearl.rows;
-                    var ingred = getPearl(
-                        0,
-                        now_y,
-                        WORLD_WIDTH /
-                            (ingredients_info.pearl.radius * 2 +
-                                ingredients_info.pearl.gap),
-                        Math.floor(ingredients_info.pearl.rows * scale)
-                    );
+                            ingredients_info.pearl.gap),
+                    Math.floor(ingredients_info.pearl.rows * scale)
+                );
 
-                    World.add(app_world, ingred);
-                    break;
-                case "westrice":
-                    now_y =
-                        now_y -
+                World.add(app_world, ingred);
+                break;
+            case "westrice":
+                now_y =
+                    now_y -
+                    (ingredients_info.westrice.radius * 2 +
+                        ingredients_info.westrice.gap) *
+                        ingredients_info.westrice.rows;
+                var ingred = getWestRice(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
                         (ingredients_info.westrice.radius * 2 +
-                            ingredients_info.westrice.gap) *
-                            ingredients_info.westrice.rows;
-                    var ingred = getWestRice(
-                        0,
-                        now_y,
-                        WORLD_WIDTH /
-                            (ingredients_info.westrice.radius * 2 +
-                                ingredients_info.westrice.gap),
-                        Math.floor(ingredients_info.westrice.rows * scale)
-                    );
+                            ingredients_info.westrice.gap),
+                    Math.floor(ingredients_info.westrice.rows * scale)
+                );
 
-                    World.add(app_world, ingred);
-                    break;
-                // case "lemonade":
-                //     now_y =
-                //         now_y -
-                //         (ingredients_info.lemonade.radius * 2 +
-                //             ingredients_info.lemonade.gap) *
-                //             ingredients_info.lemonade.rows;
-                //     console.log("milktea adding");
-                //     var ingred = getLemonade(
-                //         0,
-                //         WORLD_HEIGHT - max_water_level,
-                //         WORLD_WIDTH /
-                //             (ingredients_info.lemonade.radius * 2 +
-                //                 ingredients_info.lemonade.gap),
-                //         Math.floor(
-                //             (max_water_level - (WORLD_HEIGHT - now_y)) /
-                //                 (ingredients_info.lemonade.radius +
-                //                     ingredients_info.lemonade.gap)
-                //         )
-                //     );
-                //     World.add(app_world, ingred);
-                //     break;
-                // case "milktea":
-                //     now_y =
-                //         now_y -
-                //         (ingredients_info.milktea.radius * 2 +
-                //             ingredients_info.milktea.gap) *
-                //             ingredients_info.milktea.rows;
-                //     var ingred = getMilkTea(
-                //         0,
-                //         WORLD_HEIGHT - max_water_level,
-                //         WORLD_WIDTH /
-                //             (ingredients_info.milktea.radius * 2 +
-                //                 ingredients_info.milktea.gap),
-                //         Math.floor(
-                //             (max_water_level - (WORLD_HEIGHT - now_y)) /
-                //                 (ingredients_info.milktea.radius +
-                //                     ingredients_info.milktea.gap)
-                //         )
-                //     );
-                //     World.add(app_world, ingred);
-                //     break;
-                // case "chocolatesmoothie":
-                //     now_y =
-                //         now_y -
-                //         (ingredients_info.chocolatesmoothie.radius * 2 +
-                //             ingredients_info.chocolatesmoothie.gap) *
-                //             ingredients_info.chocolatesmoothie.rows;
-                //     var ingred = getChocolateSmoothie(
-                //         0,
-                //         WORLD_HEIGHT - max_water_level,
-                //         WORLD_WIDTH /
-                //             (ingredients_info.chocolatesmoothie.radius * 2 +
-                //                 ingredients_info.chocolatesmoothie.gap),
-                //         Math.floor(
-                //             (max_water_level - (WORLD_HEIGHT - now_y)) /
-                //                 (ingredients_info.chocolatesmoothie.radius +
-                //                     ingredients_info.chocolatesmoothie.gap)
-                //         )
-                //     );
-                //     World.add(app_world, ingred);
-                //     break;
-                case "passionfruit":
-                    now_y =
-                        now_y -
+                World.add(app_world, ingred);
+                break;
+
+            case "passionfruit":
+                now_y =
+                    now_y -
+                    (ingredients_info.passionfruit.radius * 2 +
+                        ingredients_info.passionfruit.gap) *
+                        ingredients_info.passionfruit.rows;
+                var ingred = getPassionFruit(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
                         (ingredients_info.passionfruit.radius * 2 +
-                            ingredients_info.passionfruit.gap) *
-                            ingredients_info.passionfruit.rows;
-                    var ingred = getPassionFruit(
-                        0,
-                        now_y,
-                        WORLD_WIDTH /
-                            (ingredients_info.passionfruit.radius * 2 +
-                                ingredients_info.passionfruit.gap),
-                        Math.floor(ingredients_info.passionfruit.rows * scale)
-                    );
+                            ingredients_info.passionfruit.gap),
+                    Math.floor(ingredients_info.passionfruit.rows * scale)
+                );
 
-                    World.add(app_world, ingred);
-                    break;
+                World.add(app_world, ingred);
+                break;
+            case "coconutfruit":
+                now_y =
+                    now_y -
+                    (ingredients_info.coconutfruit.radius * 2 +
+                        ingredients_info.coconutfruit.gap) *
+                        ingredients_info.coconutfruit.rows;
+                var ingred = getCoconutFruit(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
+                        (ingredients_info.coconutfruit.radius * 2 +
+                            ingredients_info.coconutfruit.gap),
+                    Math.floor(ingredients_info.coconutfruit.rows * scale)
+                );
 
-                default:
-                    console.log(
-                        "something definitely went wrong, function: hasBeverage"
-                    );
-                    break;
-            }
+                World.add(app_world, ingred);
+                break;
+
+            default:
+                console.log(
+                    "something definitely went wrong, function: hasBeverage"
+                );
+                break;
         }
     }
 }
@@ -751,53 +753,53 @@ BeerSimulator.mixed = function () {
 
     // World.add(_world, MouseConstraint.create(_engine));
 
-    var stack = Composites.stack(
-        20,
-        200,
-        15,
-        12,
-        0,
-        0,
-        function (x, y, column, row) {
-            // return Bodies.circle(x, y, 1);
-            var body = Bodies.polygon(
-                x,
-                y,
-                Math.round(Common.random(6, 12)),
-                Common.random(30, 50),
-                { friction: 0.01, restitution: 0.4 }
-            );
+    // var stack = Composites.stack(
+    //     20,
+    //     200,
+    //     15,
+    //     12,
+    //     0,
+    //     0,
+    //     function (x, y, column, row) {
+    //         // return Bodies.circle(x, y, 1);
+    //         var body = Bodies.polygon(
+    //             x,
+    //             y,
+    //             Math.round(Common.random(6, 12)),
+    //             Common.random(30, 50),
+    //             { friction: 0.01, restitution: 0.4 }
+    //         );
 
-            body.render.fillStyle = "#E5B02B";
-            body.render.strokeStyle = "#B95626";
+    //         body.render.fillStyle = "#E5B02B";
+    //         body.render.strokeStyle = "#B95626";
 
-            return body;
-        }
-    );
+    //         return body;
+    //     }
+    // );
 
-    var cream = Composites.stack(
-        20,
-        0,
-        15,
-        4,
-        0,
-        0,
-        function (x, y, column, row) {
-            // return Bodies.circle(x, y, 1);
-            var body = Bodies.polygon(
-                x,
-                y,
-                Math.round(Common.random(6, 12)),
-                Common.random(15, 20),
-                { friction: 0.01, restitution: 0.4 }
-            );
+    // var cream = Composites.stack(
+    //     20,
+    //     0,
+    //     15,
+    //     4,
+    //     0,
+    //     0,
+    //     function (x, y, column, row) {
+    //         // return Bodies.circle(x, y, 1);
+    //         var body = Bodies.polygon(
+    //             x,
+    //             y,
+    //             Math.round(Common.random(6, 12)),
+    //             Common.random(15, 20),
+    //             { friction: 0.01, restitution: 0.4 }
+    //         );
 
-            body.render.fillStyle = "#FFF";
-            body.render.strokeStyle = "#FFF";
+    //         body.render.fillStyle = "#FFF";
+    //         body.render.strokeStyle = "#FFF";
 
-            return body;
-        }
-    );
+    //         return body;
+    //     }
+    // );
 
     // World.add(_world, stack);
     // World.add(_world, cream);

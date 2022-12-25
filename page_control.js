@@ -48,11 +48,17 @@ class_selector_teabase.click();
 // selector wrappers
 for (let i = 0; i < teabase_selector_wrapper.length; i++) {
     teabase_selector_wrapper[i].addEventListener("click", function (e) {
-        this.getElementsByTagName("input")[0].click();
+        for (let j = 0; j < teabase_selector_wrapper.length; j++) {
+            teabase_selector_wrapper[j]
+                .getElementsByTagName("input")[0]
+                .removeAttribute("checked");
+        }
+
+        this.getElementsByTagName("input")[0].setAttribute("checked", true);
     });
 }
 for (let i = 0; i < ingredients_selector_wrapper.length; i++) {
     ingredients_selector_wrapper[i].addEventListener("click", function (e) {
-        this.getElementsByTagName("input")[0].click();
+        this.getElementsByTagName("input")[0].setAttribute("checked", true);
     });
 }
