@@ -66,23 +66,34 @@ for (let i = 1; i <= 5; i++) {
 }
 
 function tryPlayDrinkingSound() {
+    console.log("trying_to_play");
     let is_playing = false;
     for (let i = 1; i < 5; i++) {
-        if (drinking_sounds[i].paused || !drinking_sounds[i].currentime) {
+        if (!drinking_sounds[i].paused && drinking_sounds[i].currentTime) {
             // it is playing
             is_playing = true;
             break;
         }
     }
     if (!is_playing) {
-        let num = randomNum(1, 5);
+        let num = randomNum(0, 4);
         drinking_sounds[num].play();
     }
 }
 
-let playing_burp = false;
 let finished_drinking = false;
-function playBurpSound() {}
+let burp_sounds = [];
+for (let i = 1; i <= 3; i++) {
+    burp_sounds.push(new Audio("audios/burp_" + i.toString() + ".wav"));
+}
+
+function tryPlayBurpSoundAndFinishDrinking() {
+    if (!finished_drinking) {
+        finished_drinking = true;
+        let num = randomNum(0, 2);
+        burp_sounds[num].play();
+    }
+}
 
 function getTeaBase() {
     var teabase_selectors = document.getElementsByClassName("teabase_selector");
@@ -206,6 +217,13 @@ MilkteaSimulator.init = function () {
                 color_card[tea_base]
             );
 
+            if (
+                _engine.world.composites.length == 0 &&
+                water_left_in_bottle == 0
+            ) {
+                tryPlayBurpSoundAndFinishDrinking();
+            }
+
             for (var j = 0; j < _engine.world.composites.length; j++)
                 for (
                     var i = 0;
@@ -290,6 +308,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
     gravity_vec_y = res[1];
     if (gravity_vec_x == 0) {
         if (gravity_vec_y >= 0) {
+            water_left_in_bottle = 0;
             return null;
         } else if (gravity_vec_y < 0) {
             const h = water_left_in_bottle / WORLD_WIDTH;
@@ -345,7 +364,6 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                     (WORLD_HEIGHT + WORLD_WIDTH * k + WORLD_HEIGHT) *
                     WORLD_WIDTH;
                 if (water_left_in_bottle >= threshold_ladder_area) {
-                    console.log("5");
                     // water overflow, leaving only the cords of the ladder
                     tryPlayDrinkingSound();
                     water_left_in_bottle = threshold_ladder_area;
