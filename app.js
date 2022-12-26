@@ -14,10 +14,10 @@ let WORLD_HEIGHT = document.documentElement.clientHeight;
 let water_left_in_bottle = WORLD_HEIGHT * WORLD_WIDTH;
 
 const color_card = {
-    milktea: "rgba(243,207,179,0.5)",
-    lemonade: "rgba(207,207,207,0.5)",
-    chocolatesmoothie: "rgba(68,43,25,0.5)",
-    passionfruitdoublebang: "rgba(222,195,2,0.5)",
+    milktea: "rgba(243,207,179,0.8)",
+    lemonade: "rgba(207,207,207,0.8)",
+    chocolatesmoothie: "rgba(68,43,25,0.8)",
+    passionfruitdoublebang: "rgba(222,195,2,0.8)",
 };
 let tea_base = null;
 
@@ -35,13 +35,54 @@ var Engine = Matter.Engine,
     Common = Matter.Common,
     MouseConstraint = Matter.MouseConstraint;
 
-var BeerSimulator = {};
+var MilkteaSimulator = {};
 
 var _engine,
     _sceneName = "mixed",
     _sceneWidth,
     _sceneHeight,
     _deviceOrientationEvent;
+
+// play sounds
+
+//生成从minNum到maxNum的随机数
+function randomNum(minNum, maxNum) {
+    switch (arguments.length) {
+        case 1:
+            return parseInt(Math.random() * minNum + 1, 10);
+            break;
+        case 2:
+            return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+            break;
+        default:
+            return 0;
+            break;
+    }
+}
+
+let drinking_sounds = [];
+for (let i = 1; i <= 5; i++) {
+    drinking_sounds.push(new Audio("audios/burp_" + i.toString() + ".wav"));
+}
+
+function tryPlayDrinkingSound() {
+    let is_playing = false;
+    for (let i = 1; i < 5; i++) {
+        if (drinking_sounds[i].paused || !drinking_sounds[i].currentime) {
+            // it is playing
+            is_playing = true;
+            break;
+        }
+    }
+    if (!is_playing) {
+        let num = randomNum(1, 5);
+        drinking_sounds[num].play();
+    }
+}
+
+let playing_burp = false;
+let finished_drinking = false;
+function playBurpSound() {}
 
 function getTeaBase() {
     var teabase_selectors = document.getElementsByClassName("teabase_selector");
@@ -105,7 +146,7 @@ function draw_polygon(target_canvas, list_of_points, color) {
     ctx.fill();
 }
 
-BeerSimulator.init = function () {
+MilkteaSimulator.init = function () {
     var canvasContainer = document.getElementById("body"),
         demoStart = document.getElementById("button-start");
 
@@ -124,7 +165,7 @@ BeerSimulator.init = function () {
             },
         });
 
-        BeerSimulator.fullscreen();
+        MilkteaSimulator.fullscreen();
 
         setTimeout(function () {
             var runner = Engine.run(_engine);
@@ -132,21 +173,26 @@ BeerSimulator.init = function () {
             // pass through runner as timing for debug rendering
             _engine.metrics.timing = runner;
 
-            BeerSimulator.updateScene();
+            MilkteaSimulator.updateScene();
         }, 800);
 
-        _engine.render.options.background = "#000";
+        // _engine.render.options.background = "rgba(255,255,255,1)";
+
+        Matter.Events.on(_engine.render, "beforeRender", function () {
+            // const gravity_VEC_X = _engine.world.gravity.x;
+            // const gravity_VEC_Y = _engine.world.gravity.y;
+            // let water_cords = get_four_water_level_screen_cords(
+            //     gravity_VEC_X,
+            //     gravity_VEC_Y
+            // );
+            // draw_polygon(
+            //     _engine.render.canvas,
+            //     water_cords,
+            //     color_card[tea_base]
+            // );
+        });
 
         Matter.Events.on(_engine.render, "afterRender", function () {
-            // engineRef.push({ world: _engine.world });
-            // var ctx1 = _engine.render.canvas.getContext("2d");
-            // ctx1.fillStyle = "rgb(200,0,0)";
-            // //绘制矩形
-            // ctx1.fillRect(10, 10, 55, 50);
-
-            // ctx1.fillStyle = "rgba(0, 0, 200, 0.5)";
-            // ctx1.fillRect(30, 30, 55, 50);
-
             const gravity_VEC_X = _engine.world.gravity.x;
             const gravity_VEC_Y = _engine.world.gravity.y;
             let water_cords = get_four_water_level_screen_cords(
@@ -176,20 +222,11 @@ BeerSimulator.init = function () {
                         );
                     }
                 }
+        });
 
-            // for (
-            //     var i = 0;
-            //     i < _engine.world.composites[1].bodies.length;
-            //     i++
-            // ) {
-            //     if (_engine.world.composites[1].bodies[i].bounds.max.y < 0) {
-            //         // _engine.world.composites[0].bodies[i].render.visible = false;
-            //         Matter.Composite.remove(
-            //             _engine.world.composites[1],
-            //             _engine.world.composites[1].bodies[i]
-            //         );
-            //     }
-            // }
+        //
+        _engine.render.canvas.addEventListener("click", function () {
+            alert("clicked");
         });
     });
 
@@ -197,25 +234,25 @@ BeerSimulator.init = function () {
         "deviceorientation",
         function (event) {
             _deviceOrientationEvent = event;
-            BeerSimulator.updateGravity(event);
+            MilkteaSimulator.updateGravity(event);
         },
         true
     );
 
-    window.addEventListener("touchstart", BeerSimulator.fullscreen);
+    window.addEventListener("touchstart", MilkteaSimulator.fullscreen);
 
     window.addEventListener(
         "orientationchange",
         function () {
-            BeerSimulator.updateGravity(_deviceOrientationEvent);
-            BeerSimulator.updateScene();
-            BeerSimulator.fullscreen();
+            MilkteaSimulator.updateGravity(_deviceOrientationEvent);
+            MilkteaSimulator.updateScene();
+            MilkteaSimulator.fullscreen();
         },
         false
     );
 };
 
-window.addEventListener("load", BeerSimulator.init);
+window.addEventListener("load", MilkteaSimulator.init);
 
 // water level part
 
@@ -280,6 +317,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
             if (water_left_in_bottle >= threshold_triangle_area) {
                 water_left_in_bottle = threshold_triangle_area;
                 // water over flow, leaving threshold points
+                tryPlayDrinkingSound();
                 return [
                     [0, WORLD_HEIGHT],
                     [0, 0],
@@ -309,6 +347,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                 if (water_left_in_bottle >= threshold_ladder_area) {
                     console.log("5");
                     // water overflow, leaving only the cords of the ladder
+                    tryPlayDrinkingSound();
                     water_left_in_bottle = threshold_ladder_area;
                     return [
                         [0, WORLD_HEIGHT],
@@ -346,6 +385,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                 0.5 * (WORLD_HEIGHT / k) * WORLD_HEIGHT;
             if (water_left_in_bottle >= threshold_triangle_area) {
                 // overflow
+                tryPlayDrinkingSound();
                 water_left_in_bottle = threshold_triangle_area;
                 return [
                     [WORLD_WIDTH - WORLD_HEIGHT / k, 0],
@@ -382,6 +422,7 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                     WORLD_WIDTH;
                 if (water_left_in_bottle >= threshold_ladder_area) {
                     // overflow
+                    tryPlayDrinkingSound();
                     water_left_in_bottle = threshold_ladder_area;
                     return [
                         [0, WORLD_HEIGHT - k * WORLD_WIDTH],
@@ -420,85 +461,6 @@ function get_four_water_level_screen_cords(gravity_VEC_X, gravity_VEC_Y) {
 }
 
 ////////////////////////////////////////////////////////////////
-
-// function getMilkTea(xx, yy, columns, rows) {
-//     var ingredient = Composites.stack(
-//         xx,
-//         yy,
-//         columns,
-//         rows,
-//         ingredients_info.milktea.gap,
-//         ingredients_info.milktea.gap,
-//         function (x, y, column, row) {
-//             var body = Bodies.polygon(
-//                 x,
-//                 y,
-//                 Math.round(Common.random(6, 12)),
-//                 ingredients_info.milktea.radius,
-//                 { friction: 0.01, restitution: 0.4 }
-//             );
-
-//             body.render.fillStyle = "#F3CFB3";
-//             body.render.strokeStyle = "#F3CFB3";
-
-//             return body;
-//         }
-//     );
-//     return ingredient;
-// }
-
-// function getChocolateSmoothie(xx, yy, columns, rows) {
-//     var ingredient = Composites.stack(
-//         xx,
-//         yy,
-//         columns,
-//         rows,
-//         ingredients_info.chocolatesmoothie.gap,
-//         ingredients_info.chocolatesmoothie.gap,
-//         function (x, y, column, row) {
-//             var body = Bodies.polygon(
-//                 x,
-//                 y,
-//                 Math.round(Common.random(6, 12)),
-//                 ingredients_info.chocolatesmoothie.radius +
-//                     Common.random(-10, 10),
-//                 { friction: 0.05, restitution: 0.4 }
-//             );
-
-//             body.render.fillStyle = "#442b19";
-//             body.render.strokeStyle = "#442b19";
-
-//             return body;
-//         }
-//     );
-//     return ingredient;
-// }
-
-// function getLemonade(xx, yy, columns, rows) {
-//     var ingredient = Composites.stack(
-//         xx,
-//         yy,
-//         columns,
-//         rows,
-//         ingredients_info.lemonade.gap,
-//         ingredients_info.lemonade.gap,
-//         function (x, y, column, row) {
-//             var body = Bodies.polygon(
-//                 x,
-//                 y,
-//                 Math.round(Common.random(6, 12)),
-//                 ingredients_info.lemonade.radius + Common.random(-10, 10),
-//                 { friction: 0.001, restitution: 0.4 }
-//             );
-
-//             body.render.fillStyle = "#cfcfcf";
-//             body.render.strokeStyle = "#cfcfcf";
-
-//             return body;
-//         }
-//     );
-//     return ingredient;
-// }
 
 function getCoconutFruit(xx, yy, columns, rows) {
     var ingredient = Composites.stack(
@@ -742,84 +704,18 @@ function makeBeverage(app_world) {
     }
 }
 
-BeerSimulator.mixed = function () {
+MilkteaSimulator.mixed = function () {
     var _world = _engine.world;
     // init gravity
     _world.gravity.y = GRAVITY;
 
     // mixup the ingredients
 
-    BeerSimulator.reset();
-
-    // World.add(_world, MouseConstraint.create(_engine));
-
-    // var stack = Composites.stack(
-    //     20,
-    //     200,
-    //     15,
-    //     12,
-    //     0,
-    //     0,
-    //     function (x, y, column, row) {
-    //         // return Bodies.circle(x, y, 1);
-    //         var body = Bodies.polygon(
-    //             x,
-    //             y,
-    //             Math.round(Common.random(6, 12)),
-    //             Common.random(30, 50),
-    //             { friction: 0.01, restitution: 0.4 }
-    //         );
-
-    //         body.render.fillStyle = "#E5B02B";
-    //         body.render.strokeStyle = "#B95626";
-
-    //         return body;
-    //     }
-    // );
-
-    // var cream = Composites.stack(
-    //     20,
-    //     0,
-    //     15,
-    //     4,
-    //     0,
-    //     0,
-    //     function (x, y, column, row) {
-    //         // return Bodies.circle(x, y, 1);
-    //         var body = Bodies.polygon(
-    //             x,
-    //             y,
-    //             Math.round(Common.random(6, 12)),
-    //             Common.random(15, 20),
-    //             { friction: 0.01, restitution: 0.4 }
-    //         );
-
-    //         body.render.fillStyle = "#FFF";
-    //         body.render.strokeStyle = "#FFF";
-
-    //         return body;
-    //     }
-    // );
-
-    // World.add(_world, stack);
-    // World.add(_world, cream);
+    MilkteaSimulator.reset();
     makeBeverage(_world);
-    // setTimeout(function () {
-    //     World.add(_world, cream);
-    // }, 0);
 };
 
-// Events.on(_engine.render, "afterRender", function () {
-//     var ctx = canvas.getContext("2d");
-//     ctx.fillStyle = "rgb(200,0,0)";
-//     //绘制矩形
-//     ctx.fillRect(10, 10, 55, 50);
-
-//     ctx.fillStyle = "rgba(0, 0, 200, 0.5)";
-//     ctx.fillRect(30, 30, 55, 50);
-// });
-
-BeerSimulator.updateScene = function () {
+MilkteaSimulator.updateScene = function () {
     if (!_engine) return;
     _sceneWidth = document.documentElement.clientWidth;
     _sceneHeight = document.documentElement.clientHeight;
@@ -836,10 +732,10 @@ BeerSimulator.updateScene = function () {
     WORLD_HEIGHT = _sceneHeight;
     WORLD_WIDTH = _sceneWidth;
 
-    BeerSimulator[_sceneName]();
+    MilkteaSimulator[_sceneName]();
 };
 
-BeerSimulator.updateGravity = function (event) {
+MilkteaSimulator.updateGravity = function (event) {
     // eventsRef.push({ beta: event.beta, gamma: event.gamma });
 
     // alert(event);
@@ -864,7 +760,7 @@ BeerSimulator.updateGravity = function (event) {
     }
 };
 
-BeerSimulator.fullscreen = function () {
+MilkteaSimulator.fullscreen = function () {
     var lockFunction = window.screen.orientation.lock;
 
     var _fullscreenElement = _engine.render.canvas;
@@ -892,7 +788,7 @@ BeerSimulator.fullscreen = function () {
     }
 };
 
-BeerSimulator.reset = function () {
+MilkteaSimulator.reset = function () {
     var _world = _engine.world;
 
     Common._seed = 2;
@@ -906,30 +802,26 @@ BeerSimulator.reset = function () {
         _world,
         Bodies.rectangle(
             _sceneWidth * 0.5,
-            _sceneHeight + offset,
+            _sceneHeight + 25,
             _sceneWidth + 0.5,
-            50.5,
+            50,
             { isStatic: true }
         )
     );
     World.addBody(
         _world,
         Bodies.rectangle(
-            _sceneWidth + offset,
+            _sceneWidth + 25,
             _sceneHeight * 0.5,
-            50.5,
+            50,
             _sceneHeight + 0.5,
             { isStatic: true }
         )
     );
     World.addBody(
         _world,
-        Bodies.rectangle(
-            -offset,
-            _sceneHeight * 0.5,
-            50.5,
-            _sceneHeight + 0.5,
-            { isStatic: true }
-        )
+        Bodies.rectangle(-25, _sceneHeight * 0.5, 50, _sceneHeight + 0.5, {
+            isStatic: true,
+        })
     );
 };
