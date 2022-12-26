@@ -62,7 +62,7 @@ function randomNum(minNum, maxNum) {
 
 let drinking_sounds = [];
 for (let i = 1; i <= 5; i++) {
-    drinking_sounds.push(new Audio("audios/burp_" + i.toString() + ".wav"));
+    drinking_sounds.push(new Audio("audios/drinking_" + i.toString() + ".wav"));
 }
 
 function tryPlayDrinkingSound() {
