@@ -16,7 +16,7 @@ let water_left_in_bottle = WORLD_HEIGHT * WORLD_WIDTH;
 const color_card = {
     milktea: "rgba(243,207,179,0.8)",
     lemonade: "rgba(207,207,207,0.8)",
-    chocolatesmoothie: "rgba(68,43,25,0.8)",
+    chocolatesmoothie: "rgba(60,40,20,0.8)",
     passionfruitdoublebang: "rgba(222,195,2,0.8)",
 };
 let tea_base = null;
@@ -24,7 +24,7 @@ let tea_base = null;
 const ingredients_info = {
     pearl: { radius: 50, gap: 2, rows: 2 },
     westrice: { radius: 10, gap: 3, rows: 2 },
-    passionfruit: { radius: 5, gap: 0, rows: 5 },
+    passionfruit: { radius: 20, gap: 0, rows: 5 },
     coconutfruit: { radius: 30, gap: 3, rows: 3 },
 };
 
@@ -42,6 +42,17 @@ var _engine,
     _sceneWidth,
     _sceneHeight,
     _deviceOrientationEvent;
+
+// text
+
+function showText(target_canvas, text, color, font, xx, yy) {
+    let context = target_canvas.getContext("2d");
+    context.fillStyle = color;
+    context.font = font;
+    context.textAlign = "center";
+    context.textBaseline = "top";
+    context.fillText(text, xx, yy);
+}
 
 // play sounds
 
@@ -83,6 +94,8 @@ function tryPlayDrinkingSound() {
 
 let finished_drinking = false;
 let burp_sounds = [];
+let quote = null;
+let quote_from = null;
 for (let i = 1; i <= 3; i++) {
     burp_sounds.push(new Audio("audios/burp_" + i.toString() + ".wav"));
 }
@@ -92,6 +105,74 @@ function tryPlayBurpSoundAndFinishDrinking() {
         finished_drinking = true;
         let num = randomNum(0, 2);
         burp_sounds[num].play();
+    }
+}
+function getQuote() {
+    var httpRequest = new XMLHttpRequest(); //第一步：建立所需的对象
+    httpRequest.open("GET", "https://v1.hitokoto.cn/", true); //第二步：打开连接  将请求参数写在url中  ps:"http://localhost:8080/rest/xxx"
+    httpRequest.send(); //第三步：发送请求  将请求参数写在URL中
+    /**
+     * 获取数据后的处理程序
+     */
+    httpRequest.onreadystatechange = function () {
+        if (httpRequest.readyState == 4 && httpRequest.status == 200) {
+            var json = httpRequest.responseText; //获取到json字符串，还需解析
+            var json_dic = JSON.parse(json);
+            console.log(json_dic);
+            quote = json_dic.hitokoto;
+            quote_from = "    ————" + json_dic.from;
+
+            const font_size = 20;
+            const padding = 40;
+
+            const characters_per_line = Math.ceil(
+                (WORLD_WIDTH - 2 * padding) / font_size
+            );
+            let i = 0;
+            quote = [];
+            while (i * characters_per_line < json_dic.hitokoto.length) {
+                quote.push(
+                    json_dic.hitokoto.slice(
+                        i * characters_per_line,
+                        (i + 1) * characters_per_line
+                    )
+                );
+                i = i + 1;
+            }
+            // quote.push(json_dic.hitokoto.slice(i * characters_per_line));
+            console.log(quote);
+        }
+    };
+}
+
+function showQuote() {
+    // console.log(finished_drinking, quote);
+    if (finished_drinking && quote) {
+        // console.log("showing");
+        let paddings = 40;
+        let font_size = 20;
+        let now_at = WORLD_HEIGHT / 4;
+
+        for (let i = 0; i < quote.length; i++) {
+            showText(
+                _engine.render.canvas,
+                quote[i],
+                "#333333",
+                "normal normal 20px system-ui",
+                WORLD_WIDTH / 2,
+                now_at
+            );
+            now_at = now_at + font_size + paddings;
+        }
+
+        showText(
+            _engine.render.canvas,
+            quote_from,
+            "#555555",
+            "normal normal 20px system-ui",
+            WORLD_WIDTH / 2,
+            now_at
+        );
     }
 }
 
@@ -156,6 +237,47 @@ function draw_polygon(target_canvas, list_of_points, color) {
     ctx.closePath();
     ctx.fill();
 }
+// behaviors when clicking screen
+let clicked_once = false;
+let timer = null;
+
+function global_click_controller() {
+    const new_timer = Date.now();
+    if (clicked_once) {
+        console.log("clicked_once");
+        if (timer == null) {
+            timer = new_timer;
+            // show heads up
+            showText(
+                _engine.render.canvas,
+                "再次点击屏幕退出",
+                "#555555",
+                "normal normal 10px system-ui",
+                WORLD_WIDTH / 2,
+                10
+            );
+        } else if (new_timer - timer < 5000) {
+            // double clicked
+            location.reload();
+        }
+    } else {
+        if (timer != null && new_timer - timer >= 5000) {
+            // clear heads up TODO
+
+            timer = null;
+        } else if (timer != null && new_timer - timer < 5000) {
+            showText(
+                _engine.render.canvas,
+                "再次点击屏幕退出",
+                "#555555",
+                "normal normal 10px system-ui",
+                WORLD_WIDTH / 2,
+                10
+            );
+        }
+    }
+    clicked_once = false;
+}
 
 MilkteaSimulator.init = function () {
     var canvasContainer = document.getElementById("body"),
@@ -171,7 +293,7 @@ MilkteaSimulator.init = function () {
                 options: {
                     wireframes: false,
                     showAngleIndicator: false,
-                    showDebug: true,
+                    showDebug: false,
                 },
             },
         });
@@ -187,7 +309,9 @@ MilkteaSimulator.init = function () {
             MilkteaSimulator.updateScene();
         }, 800);
 
-        // _engine.render.options.background = "rgba(255,255,255,1)";
+        _engine.render.options.background = "#FFFFFF";
+
+        getQuote();
 
         Matter.Events.on(_engine.render, "beforeRender", function () {
             // const gravity_VEC_X = _engine.world.gravity.x;
@@ -216,6 +340,8 @@ MilkteaSimulator.init = function () {
                 water_cords,
                 color_card[tea_base]
             );
+            global_click_controller();
+            showQuote();
 
             if (
                 _engine.world.composites.length == 0 &&
@@ -244,7 +370,7 @@ MilkteaSimulator.init = function () {
 
         //
         _engine.render.canvas.addEventListener("click", function () {
-            alert("clicked");
+            clicked_once = true;
         });
     });
 
@@ -497,9 +623,9 @@ function getCoconutFruit(xx, yy, columns, rows) {
                 { friction: 0.01, restitution: 0.4 }
             );
 
-            body.render.fillStyle = "rgba(255,255,255,0.5)";
-            console.log("transparancy enabled");
-            body.render.strokeStyle = "rgba(255,255,255,0.5)";
+            body.render.fillStyle = "rgba(190,190,190,0.5)";
+            // console.log("transparancy enabled");
+            body.render.strokeStyle = "rgba(160,160,160,0.5)";
 
             body.density = 0.0005; //default value is 0.001
 
@@ -518,15 +644,14 @@ function getPassionFruit(xx, yy, columns, rows) {
         ingredients_info.passionfruit.gap,
         ingredients_info.passionfruit.gap,
         function (x, y, column, row) {
-            var body = Bodies.polygon(
+            var body = Bodies.circle(
                 x,
                 y,
-                Math.round(Common.random(6, 12)),
                 ingredients_info.passionfruit.radius,
                 { friction: 0.01, restitution: 0.4 }
             );
 
-            body.render.fillStyle = "#FFFFFF";
+            body.render.fillStyle = "#222222";
             body.render.strokeStyle = "#FFFFFF";
 
             body.density = 0.0005; //default value is 0.001
@@ -546,15 +671,10 @@ function getPearl(xx, yy, columns, rows) {
         ingredients_info.pearl.gap,
         ingredients_info.pearl.gap,
         function (x, y, column, row) {
-            var body = Bodies.circle(
-                x,
-                y,
-                ingredients_info.pearl.radius + Common.random(-5, 5),
-                {
-                    friction: 0.02,
-                    restitution: 0.4,
-                }
-            );
+            var body = Bodies.circle(x, y, ingredients_info.pearl.radius, {
+                friction: 0.02,
+                restitution: 0.4,
+            });
 
             body.render.fillStyle = "#000000";
             body.render.strokeStyle = "#FFFFFF";
@@ -641,7 +761,9 @@ function makeBeverage(app_world) {
         scale = scale * 0.5;
     }
     //make it
+    console.log("makeBeverage");
     for (var i = 0; i < ingredients.length; i++) {
+        console.log("making");
         switch (ingredients[i]) {
             case "pearl":
                 now_y =
