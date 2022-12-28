@@ -45,11 +45,11 @@ var _engine,
 
 // text
 
-function showText(target_canvas, text, color, font, xx, yy) {
+function showText(target_canvas, text, color, font, xx, yy, align = "center") {
     let context = target_canvas.getContext("2d");
     context.fillStyle = color;
     context.font = font;
-    context.textAlign = "center";
+    context.textAlign = align;
     context.textBaseline = "top";
     context.fillText(text, xx, yy);
 }
@@ -77,7 +77,6 @@ for (let i = 1; i <= 5; i++) {
 }
 
 function tryPlayDrinkingSound() {
-    console.log("trying_to_play");
     let is_playing = false;
     for (let i = 1; i < 5; i++) {
         if (!drinking_sounds[i].paused && drinking_sounds[i].currentTime) {
@@ -120,7 +119,7 @@ function getQuote() {
             var json_dic = JSON.parse(json);
             console.log(json_dic);
             quote = json_dic.hitokoto;
-            quote_from = "    ————" + json_dic.from;
+            quote_from = "        " + json_dic.from;
 
             const font_size = 20;
             const padding = 40;
@@ -146,12 +145,11 @@ function getQuote() {
 }
 
 function showQuote() {
-    // console.log(finished_drinking, quote);
     if (finished_drinking && quote) {
         // console.log("showing");
         let paddings = 40;
         let font_size = 20;
-        let now_at = WORLD_HEIGHT / 4;
+        let now_at = (WORLD_HEIGHT * 3) / 4;
 
         for (let i = 0; i < quote.length; i++) {
             showText(
@@ -171,8 +169,57 @@ function showQuote() {
             "#555555",
             "normal normal 20px system-ui",
             WORLD_WIDTH / 2,
-            now_at
+            now_at,
+            "left"
         );
+    }
+}
+
+//
+let cup_style_img = null;
+let cup_w;
+let cup_h;
+let cup_pos_x;
+let cup_pos_y;
+function getCupStyleImage() {
+    // cup_style_img = new Image();
+    // cup_style_img.src = "./cup_style_images/rabbit.png";
+    // cup_style_img.width = WORLD_WIDTH / 10;
+
+    var cupstyle_selectors =
+        document.getElementsByClassName("cupstyle_selector");
+    console.log(cupstyle_selectors.length);
+    let cupstyle_img_name = "blank";
+    for (let i = 0; i < cupstyle_selectors.length; i++) {
+        let cupstyle_input = cupstyle_selectors[i];
+        if (cupstyle_input.hasAttribute("checked")) {
+            cupstyle_img_name = cupstyle_input.value;
+            break;
+        }
+    }
+
+    switch (cupstyle_img_name) {
+        case "blank":
+            break;
+        case "rabbit":
+            cup_style_img = new Image();
+            cup_style_img.src = "./cupstyle_images/rabbit.png";
+            const width_scale = 0.5;
+            cup_w = WORLD_WIDTH * width_scale;
+            cup_h = (cup_w / cup_style_img.width) * cup_style_img.height;
+            cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
+            cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
+        default:
+            console.log("encountered unknown cupstyle");
+            break;
+    }
+}
+
+function drawCupStyle() {
+    if (cup_style_img) {
+        let context = _engine.render.canvas.getContext("2d");
+
+        context.drawImage(cup_style_img, cup_pos_x, cup_pos_y, cup_w, cup_h);
     }
 }
 
@@ -287,6 +334,7 @@ MilkteaSimulator.init = function () {
         demoStart.style.display = "none";
         getTeaBase();
         getIngredients();
+        getCupStyleImage();
 
         _engine = Engine.create(canvasContainer, {
             render: {
@@ -312,6 +360,7 @@ MilkteaSimulator.init = function () {
         _engine.render.options.background = "#FFFFFF";
 
         getQuote();
+        getCupStyleImage();
 
         Matter.Events.on(_engine.render, "beforeRender", function () {
             // const gravity_VEC_X = _engine.world.gravity.x;
@@ -340,6 +389,7 @@ MilkteaSimulator.init = function () {
                 water_cords,
                 color_card[tea_base]
             );
+            drawCupStyle();
             global_click_controller();
             showQuote();
 
@@ -470,7 +520,11 @@ function get_water_level_cordinates(gravity_VEC_X, gravity_VEC_Y) {
                 ];
             } else if (water_left_in_bottle < threshold_triangle_area) {
                 const b = Math.sqrt(-2 * k * water_left_in_bottle);
-                return [[0, b], [0, 0], [-b / k]];
+                return [
+                    [0, b],
+                    [0, 0],
+                    [-b / k, 0],
+                ];
             }
         } else if (k > threshold_k) {
             // threshold triangle area
@@ -624,7 +678,6 @@ function getCoconutFruit(xx, yy, columns, rows) {
             );
 
             body.render.fillStyle = "rgba(190,190,190,0.5)";
-            // console.log("transparancy enabled");
             body.render.strokeStyle = "rgba(160,160,160,0.5)";
 
             body.density = 0.0005; //default value is 0.001
@@ -763,7 +816,6 @@ function makeBeverage(app_world) {
     //make it
     console.log("makeBeverage");
     for (var i = 0; i < ingredients.length; i++) {
-        console.log("making");
         switch (ingredients[i]) {
             case "pearl":
                 now_y =

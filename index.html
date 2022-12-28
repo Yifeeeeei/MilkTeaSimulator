@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>喝赛博奶茶，减电子脂肪</title>
+        <title>赛博茶铺</title>
         <script src="matter.js" type="text/javascript" charset="utf-8"></script>
 
         <link rel="stylesheet" href="./style.css" />
@@ -10,8 +10,8 @@
     <body id="body">
         <div id="all">
             <div class="title_wrapper">
-                <div id="title">赛博奶茶店</div>
-                <div id="version">v0.0.3</div>
+                <div id="title">赛博茶铺</div>
+                <div id="version">v0.0.5</div>
             </div>
             <div id="container">
                 <div id="left_part">
@@ -22,6 +22,10 @@
                     <div class="class_selector" id="class_selector_addings">
                         <img src="./pics/addings.svg" alt="" />
                         <p>加料</p>
+                    </div>
+                    <div class="class_selector" id="class_selector_cupstyle">
+                        <img src="./pics/cupstyle.svg" alt="" />
+                        <p>LOGO</p>
                     </div>
                 </div>
 
@@ -149,14 +153,45 @@
                                 /><label for="addings_coconutfruit">椰果</label>
                             </div>
                         </div>
+
+                        <div id="cupstyle">
+                            <p class="cupstyle_selector_wrapper">
+                                <input
+                                    class="cupstyle_selector dot"
+                                    id="cupstyle_blank"
+                                    type="radio"
+                                    name="cupstyle"
+                                    value="blank"
+                                    checked="true"
+                                />
+                                <img
+                                    src="./cupstyle_images/blank.png"
+                                    alt=""
+                                    class="sample_pics"
+                                />
+                                <label for="cupstyle_blank">🈚️</label>
+                            </p>
+                            <p class="cupstyle_selector_wrapper">
+                                <input
+                                    class="cupstyle_selector dot"
+                                    id="cupstyle_rabbit"
+                                    type="radio"
+                                    name="cupstyle"
+                                    value="rabbit"
+                                />
+                                <img
+                                    src="./cupstyle_images/rabbit.png"
+                                    alt=""
+                                    class="sample_pics"
+                                />
+                                <label for="cupstyle_blank">兔年限定</label>
+                            </p>
+                        </div>
                     </div>
                 </div>
             </div>
             <div id="button-start">下单!</div>
         </div>
-
-        <!-- <input id="button-start" value="选好了，下单！" type="submit" /> -->
-        <!-- <img src="./pics/order.svg" alt="" id="button-start" /> -->
 
         <script src="app.js" type="text/javascript" charset="utf-8"></script>
         <script
