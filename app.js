@@ -326,6 +326,9 @@ function global_click_controller() {
     clicked_once = false;
 }
 
+let debug_x = 0;
+let debug_y = 0;
+
 MilkteaSimulator.init = function () {
     var canvasContainer = document.getElementById("body"),
         demoStart = document.getElementById("button-start");
@@ -399,8 +402,8 @@ MilkteaSimulator.init = function () {
                 WORLD_WIDTH.toString() + " " + WORLD_HEIGHT.toString(),
                 "#000000",
                 "",
-                380,
-                800
+                debug_x,
+                debug_y
             );
             drawCupStyle();
             global_click_controller();
