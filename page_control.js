@@ -1,3 +1,12 @@
+// disable double click
+document.addEventListener(
+    "dblclick",
+    function (event) {
+        event.preventDefault();
+    },
+    { passive: false }
+);
+
 // make all ingredients selector disapper
 
 let ingredients_selector_wrapper = document.getElementsByClassName(
