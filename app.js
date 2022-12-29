@@ -326,8 +326,8 @@ function global_click_controller() {
     clicked_once = false;
 }
 
-let debug_x = 0;
-let debug_y = 0;
+var debug_x = 0;
+var debug_y = 0;
 
 MilkteaSimulator.init = function () {
     var canvasContainer = document.getElementById("body"),
@@ -337,7 +337,6 @@ MilkteaSimulator.init = function () {
         demoStart.style.display = "none";
         getTeaBase();
         getIngredients();
-        getCupStyleImage();
 
         _engine = Engine.create(canvasContainer, {
             render: {
@@ -931,6 +930,7 @@ MilkteaSimulator.mixed = function () {
     // mixup the ingredients
 
     MilkteaSimulator.reset();
+    getCupStyleImage();
     makeBeverage(_world);
 };
 
