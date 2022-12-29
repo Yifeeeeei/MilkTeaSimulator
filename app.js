@@ -394,6 +394,15 @@ MilkteaSimulator.init = function () {
             //     color_card[tea_base]
             // );
             // drawWater();
+            showText(
+                _engine.render.canvas,
+                WORLD_WIDTH.toString() + " " + WORLD_HEIGHT.toString(),
+                "#000000",
+                "",
+                0,
+                0,
+                "left"
+            );
             drawCupStyle();
             global_click_controller();
             showQuote();
