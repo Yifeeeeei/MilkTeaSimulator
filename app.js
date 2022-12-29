@@ -399,8 +399,8 @@ MilkteaSimulator.init = function () {
                 WORLD_WIDTH.toString() + " " + WORLD_HEIGHT.toString(),
                 "#000000",
                 "",
-                40,
-                0
+                380,
+                800
             );
             drawCupStyle();
             global_click_controller();
