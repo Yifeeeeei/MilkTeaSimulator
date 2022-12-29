@@ -928,6 +928,9 @@ MilkteaSimulator.updateScene = function () {
     _sceneWidth = document.documentElement.clientWidth;
     _sceneHeight = document.documentElement.clientHeight;
 
+    WORLD_HEIGHT = _sceneHeight;
+    WORLD_WIDTH = _sceneWidth;
+
     var boundsMax = _engine.world.bounds.max,
         renderOptions = _engine.render.options,
         canvas = _engine.render.canvas;
