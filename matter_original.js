@@ -6771,16 +6771,6 @@
                          */
 
                         /**
-                         * Fired before rendering
-                         *
-                         * @event afterBackgroundRender
-                         * @param {} event An event object
-                         * @param {number} event.timestamp The engine.timing.timestamp of the event
-                         * @param {} event.source The source object of the event
-                         * @param {} event.name The name of the event
-                         */
-
-                        /**
                          * Fired after rendering
                          *
                          * @event afterRender
@@ -9658,12 +9648,6 @@
                             context.fillRect(0, 0, canvas.width, canvas.height);
                             context.globalCompositeOperation = "source-over";
 
-                            Events.trigger(
-                                render,
-                                "afterBackgroundRender",
-                                event
-                            );
-
                             // handle bounds
                             if (options.hasBounds) {
                                 var boundsWidth =
@@ -11076,16 +11060,6 @@
                          * Fired before rendering
                          *
                          * @event beforeRender
-                         * @param {} event An event object
-                         * @param {number} event.timestamp The engine.timing.timestamp of the event
-                         * @param {} event.source The source object of the event
-                         * @param {} event.name The name of the event
-                         */
-
-                        /**
-                         * Fired before rendering
-                         *
-                         * @event afterBackgroundRender
                          * @param {} event An event object
                          * @param {number} event.timestamp The engine.timing.timestamp of the event
                          * @param {} event.source The source object of the event

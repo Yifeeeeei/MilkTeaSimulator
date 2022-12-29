@@ -375,20 +375,25 @@ MilkteaSimulator.init = function () {
             //     color_card[tea_base]
             // );
         });
+        Matter.Events.on(_engine.render, "afterBackgroundRender", function () {
+            drawWater();
+            return;
+        });
 
         Matter.Events.on(_engine.render, "afterRender", function () {
-            const gravity_VEC_X = _engine.world.gravity.x;
-            const gravity_VEC_Y = _engine.world.gravity.y;
-            let water_cords = get_four_water_level_screen_cords(
-                gravity_VEC_X,
-                gravity_VEC_Y
-            );
+            // const gravity_VEC_X = _engine.world.gravity.x;
+            // const gravity_VEC_Y = _engine.world.gravity.y;
+            // let water_cords = get_four_water_level_screen_cords(
+            //     gravity_VEC_X,
+            //     gravity_VEC_Y
+            // );
 
-            draw_polygon(
-                _engine.render.canvas,
-                water_cords,
-                color_card[tea_base]
-            );
+            // draw_polygon(
+            //     _engine.render.canvas,
+            //     water_cords,
+            //     color_card[tea_base]
+            // );
+            // drawWater();
             drawCupStyle();
             global_click_controller();
             showQuote();
@@ -656,6 +661,17 @@ function get_four_water_level_screen_cords(gravity_VEC_X, gravity_VEC_Y) {
         vec_results.push([x_to_X(result[i][0]), y_to_Y(result[i][1])]);
     }
     return vec_results;
+}
+
+function drawWater() {
+    const gravity_VEC_X = _engine.world.gravity.x;
+    const gravity_VEC_Y = _engine.world.gravity.y;
+    let water_cords = get_four_water_level_screen_cords(
+        gravity_VEC_X,
+        gravity_VEC_Y
+    );
+
+    draw_polygon(_engine.render.canvas, water_cords, color_card[tea_base]);
 }
 
 ////////////////////////////////////////////////////////////////

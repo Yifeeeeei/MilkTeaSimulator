@@ -10,6 +10,7 @@ html {
         Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue",
         sans-serif;
 }
+
 .title_wrapper {
     /* align-items: center; */
     vertical-align: middle;
@@ -18,38 +19,38 @@ html {
     height: 10%;
     font-style: italic;
 }
+
 #title {
     /* position: absolute; */
-
     border: 2px solid black;
-
     text-align: center;
     font-size: xxx-large;
     color: yellow;
     text-shadow: 2px 2px cyan;
     font-weight: 900;
 }
+
 #container {
     width: 100%;
     display: flex;
     height: 83%;
     /* border: 2px solid green; */
 }
+
 #left_part {
     float: left;
     width: 15%;
     overflow-y: scroll;
-
     /* height: 100%; */
     border: 1px solid yellow;
 }
+
 #right_part {
     float: left;
     overflow-y: scroll;
     /* width: 73vw; */
     position: relative;
     flex: 1;
-
     /* height: 100%; */
     border: 1px solid yellow;
 }
@@ -73,9 +74,11 @@ html {
     position: relative;
     border-bottom: 1px solid cyan;
 }
+
 .class_selector > img {
     width: 100%;
 }
+
 #button-start {
     height: 7%;
     text-align: center;
@@ -88,10 +91,12 @@ html {
     text-shadow: 2px 2px cyan;
     font-style: italic;
 }
+
 input {
     left: 0;
     position: absolute;
 }
+
 .teabase_selector_wrapper,
 .cupstyle_selector_wrapper,
 .ingredients_selector_wrapper {
@@ -100,6 +105,7 @@ input {
     height: 15%;
     border-bottom: 1px solid cyan;
 }
+
 label {
     position: absolute;
     right: 10%;
@@ -117,6 +123,7 @@ label {
     /* background-color: rgba(255, 99, 71, 0.568); */
     border: 5px solid cyan;
 }
+
 label {
     font-size: x-large;
     /* color: yellow; */
