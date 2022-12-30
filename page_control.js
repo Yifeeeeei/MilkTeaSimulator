@@ -114,6 +114,10 @@ for (let i = 0; i < cupstyle_selector_wrapper.length; i++) {
 
 for (let i = 0; i < ingredients_selector_wrapper.length; i++) {
     ingredients_selector_wrapper[i].addEventListener("click", function (e) {
-        this.getElementsByTagName("input")[0].setAttribute("checked", true);
+        if (this.getElementsByTagName("input")[0].hasAttribute("checked")) {
+            this.getElementsByTagName("input")[0].removeAttribute("checked");
+        } else {
+            this.getElementsByTagName("input")[0].setAttribute("checked", true);
+        }
     });
 }
