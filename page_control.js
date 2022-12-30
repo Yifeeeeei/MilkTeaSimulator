@@ -7,6 +7,10 @@ document.addEventListener(
     { passive: false }
 );
 
+// full screen
+let html_ele = document.getElementsByTagName("html")[0];
+html_ele.requestFullscreen();
+
 // make all ingredients selector disapper
 
 let ingredients_selector_wrapper = document.getElementsByClassName(
