@@ -22,10 +22,10 @@ const color_card = {
 let tea_base = null;
 
 const ingredients_info = {
-    pearl: { radius: 50, gap: 2, rows: 2 },
-    westrice: { radius: 10, gap: 3, rows: 2 },
-    passionfruit: { radius: 20, gap: 0, rows: 5 },
-    coconutfruit: { radius: 30, gap: 3, rows: 3 },
+    pearl: { radius: 30, gap: 20, rows: 3 },
+    westrice: { radius: 20, gap: 20, rows: 2 },
+    passionfruit: { radius: 20, gap: 20, rows: 5 },
+    coconutfruit: { radius: 30, gap: 20, rows: 3 },
 };
 
 var Engine = Matter.Engine,
@@ -951,8 +951,6 @@ MilkteaSimulator.updateScene = function () {
 
     canvas.width = renderOptions.width = _sceneWidth;
     canvas.height = renderOptions.height = _sceneHeight;
-    WORLD_HEIGHT = _sceneHeight;
-    WORLD_WIDTH = _sceneWidth;
 
     MilkteaSimulator[_sceneName]();
 };
