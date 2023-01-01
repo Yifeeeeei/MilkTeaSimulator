@@ -78,14 +78,16 @@ html {
 .class_selector > img {
     width: 100%;
 }
-
+.class_selector > p {
+    font-size: large;
+}
 #button-start {
     height: 7%;
     text-align: center;
     background-color: yellow;
     border: 3px solid cyan;
 
-    font-size: xxx-large;
+    font-size: 5vh;
     color: black;
     font-weight: 700;
     text-shadow: 2px 2px cyan;
@@ -125,7 +127,7 @@ label {
 }
 
 label {
-    font-size: xxx-large;
+    font-size: 4vh;
     /* color: yellow; */
     /* text-shadow: 2px 2px cyan; */
 }

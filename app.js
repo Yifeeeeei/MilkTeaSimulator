@@ -22,10 +22,11 @@ const color_card = {
 let tea_base = null;
 
 const ingredients_info = {
-    pearl: { radius: 30, gap: 20, rows: 3 },
-    westrice: { radius: 20, gap: 20, rows: 2 },
-    passionfruit: { radius: 20, gap: 20, rows: 5 },
-    coconutfruit: { radius: 30, gap: 20, rows: 3 },
+    pearl: { radius: 20, gap: 20, rows: 3 },
+    westrice: { radius: 10, gap: 20, rows: 2 },
+    passionfruit: { radius: 10, gap: 20, rows: 5 },
+    coconutfruit: { radius: 25, gap: 20, rows: 3 },
+    xiancao: { radius: 30, gap: 30, rows: 3 },
 };
 
 var Engine = Matter.Engine,
@@ -201,7 +202,7 @@ function getCupStyleImage() {
     switch (cupstyle_img_name) {
         case "blank":
             break;
-        case "rabbit":
+        case "rabbit": {
             cup_style_img = new Image();
             cup_style_img.src = "./cupstyle_images/rabbit.png";
             const width_scale = 0.5;
@@ -209,6 +210,19 @@ function getCupStyleImage() {
             cup_h = (cup_w / cup_style_img.width) * cup_style_img.height;
             cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
             cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
+            break;
+        }
+        case "sadtea": {
+            cup_style_img = new Image();
+            cup_style_img.src = "./cupstyle_images/sadtea.png";
+            const width_scale = 0.5;
+            cup_w = WORLD_WIDTH * width_scale;
+            cup_h = (cup_w / cup_style_img.width) * cup_style_img.height;
+            cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
+            cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
+
+            break;
+        }
         default:
             console.log("encountered unknown cupstyle");
             break;
@@ -226,28 +240,38 @@ function drawCupStyle() {
 function getTeaBase() {
     var teabase_selectors = document.getElementsByClassName("teabase_selector");
     console.log(teabase_selectors.length);
-    tea_base = "milktea";
+    let tea_selected = "milktea";
     for (let i = 0; i < teabase_selectors.length; i++) {
         let teabase_input = teabase_selectors[i];
         if (teabase_input.hasAttribute("checked")) {
-            tea_base = teabase_input.value;
+            tea_selected = teabase_input.value;
             break;
         }
     }
 
     // add ingrediends
 
-    switch (tea_base) {
+    switch (tea_selected) {
         case "milktea":
+            tea_base = "milktea";
             break;
         case "lemonade":
+            tea_base = "lemonade";
             break;
         case "chocolatesmoothie":
+            tea_base = "chocolatesmoothie";
             break;
         case "passionfruitdoublebang":
+            tea_base = "passionfruitdoublebang";
             ingredients.push("passionfruit");
             ingredients.push("coconutfruit");
             break;
+        case "pearlmilktea":
+            tea_base = "milktea";
+            ingredients.push("pearl");
+            break;
+        default:
+            console.log("Unknown teabase");
     }
 
     console.log(tea_base);
@@ -396,14 +420,14 @@ MilkteaSimulator.init = function () {
             //     color_card[tea_base]
             // );
             // drawWater();
-            showText(
-                _engine.render.canvas,
-                WORLD_WIDTH.toString() + " " + WORLD_HEIGHT.toString(),
-                "#000000",
-                "",
-                debug_x,
-                debug_y
-            );
+            // showText(
+            //     _engine.render.canvas,
+            //     WORLD_WIDTH.toString() + " " + WORLD_HEIGHT.toString(),
+            //     "#000000",
+            //     "",
+            //     debug_x,
+            //     debug_y
+            // );
             drawCupStyle();
             global_click_controller();
             showQuote();
@@ -742,7 +766,7 @@ function getPassionFruit(xx, yy, columns, rows) {
 }
 
 function getPearl(xx, yy, columns, rows) {
-    var ingredient = Composites.pyramid(
+    var ingredient = Composites.stack(
         xx,
         yy,
         columns,
@@ -767,7 +791,7 @@ function getPearl(xx, yy, columns, rows) {
 }
 
 function getWestRice(xx, yy, columns, rows) {
-    var ingredient = Composites.pyramid(
+    var ingredient = Composites.stack(
         xx,
         yy,
         columns,
@@ -789,6 +813,37 @@ function getWestRice(xx, yy, columns, rows) {
             body.render.strokeStyle = "#777777";
 
             body.density = 0.0015;
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
+function getXiancao(xx, yy, columns, rows) {
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.xiancao.gap,
+        ingredients_info.xiancao.gap,
+        function (x, y, column, row) {
+            var body = Bodies.rectangle(
+                x,
+                y,
+                2 * (ingredients_info.xiancao.radius + Common.random(0, 20)),
+                2 * (ingredients_info.xiancao.radius + Common.random(0, 20)),
+                {
+                    friction: 0.02,
+                    restitution: 0.4,
+                }
+            );
+
+            body.render.fillStyle = "rgba(0,0,0,1)";
+            body.render.strokeStyle = "rgba(25,25,25,0.2)";
+
+            body.density = 0.0001;
 
             return body;
         }
@@ -908,6 +963,23 @@ function makeBeverage(app_world) {
                         (ingredients_info.coconutfruit.radius * 2 +
                             ingredients_info.coconutfruit.gap),
                     Math.floor(ingredients_info.coconutfruit.rows * scale)
+                );
+
+                World.add(app_world, ingred);
+                break;
+            case "xiancao":
+                now_y =
+                    now_y -
+                    (ingredients_info.xiancao.radius * 2 +
+                        ingredients_info.xiancao.gap) *
+                        ingredients_info.xiancao.rows;
+                var ingred = getXiancao(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
+                        (ingredients_info.xiancao.radius * 2 +
+                            ingredients_info.xiancao.gap),
+                    Math.floor(ingredients_info.xiancao.rows * scale)
                 );
 
                 World.add(app_world, ingred);
