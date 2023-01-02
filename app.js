@@ -18,6 +18,7 @@ const color_card = {
     lemonade: "rgba(207,207,207,0.8)",
     chocolatesmoothie: "rgba(60,40,20,0.8)",
     passionfruitdoublebang: "rgba(222,195,2,0.8)",
+    redgrapefruit: "rgba(236,35,27,0.8)",
 };
 let tea_base = null;
 
@@ -27,6 +28,7 @@ const ingredients_info = {
     passionfruit: { radius: 10, gap: 20, rows: 5 },
     coconutfruit: { radius: 25, gap: 20, rows: 3 },
     xiancao: { radius: 30, gap: 30, rows: 3 },
+    redgrapefruit: { radius: 150, gap: 50, rows: 2 },
 };
 
 var Engine = Matter.Engine,
@@ -269,6 +271,10 @@ function getTeaBase() {
         case "pearlmilktea":
             tea_base = "milktea";
             ingredients.push("pearl");
+            break;
+        case "redgrapefruit":
+            tea_base = "redgrapefruit";
+            ingredients.push("redgrapefruit");
             break;
         default:
             console.log("Unknown teabase");
@@ -765,6 +771,52 @@ function getPassionFruit(xx, yy, columns, rows) {
     return ingredient;
 }
 
+function getRedGrapeFruit(xx, yy, columns, rows) {
+    // let texture_img = new Image();
+    // texture_img.src = "./textures/red_grapefruit.png";
+    // const img_scale = ingredients_info.redgrapefruit.radius / texture_img.width;
+    // console.log(
+    //     texture_img,
+    //     texture_img.naturalWidth,
+    //     texture_img.naturalHeight
+    // );
+
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.redgrapefruit.gap,
+        ingredients_info.redgrapefruit.gap,
+        function (x, y, column, row) {
+            var body = Bodies.circle(
+                x,
+                y,
+                ingredients_info.redgrapefruit.radius,
+                {
+                    friction: 0.02,
+                    restitution: 0.4,
+                    render: {
+                        sprite: {
+                            texture: "./textures/red_grapefruit.png",
+                            xScale: ingredients_info.redgrapefruit.radius / 100,
+                            yScale: ingredients_info.redgrapefruit.radius / 100,
+                        },
+                    },
+                }
+            );
+
+            body.render.fillStyle = "#000000";
+            body.render.strokeStyle = "#FFFFFF";
+
+            body.density = 0.002;
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
 function getPearl(xx, yy, columns, rows) {
     var ingredient = Composites.stack(
         xx,
@@ -777,6 +829,11 @@ function getPearl(xx, yy, columns, rows) {
             var body = Bodies.circle(x, y, ingredients_info.pearl.radius, {
                 friction: 0.02,
                 restitution: 0.4,
+                render: {
+                    sprite: {
+                        texture: "./textures/yellow_lemon.svg",
+                    },
+                },
             });
 
             body.render.fillStyle = "#000000";
@@ -980,6 +1037,24 @@ function makeBeverage(app_world) {
                         (ingredients_info.xiancao.radius * 2 +
                             ingredients_info.xiancao.gap),
                     Math.floor(ingredients_info.xiancao.rows * scale)
+                );
+
+                World.add(app_world, ingred);
+                break;
+
+            case "redgrapefruit":
+                now_y =
+                    now_y -
+                    (ingredients_info.redgrapefruit.radius * 2 +
+                        ingredients_info.redgrapefruit.gap) *
+                        ingredients_info.redgrapefruit.rows;
+                var ingred = getRedGrapeFruit(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
+                        (ingredients_info.redgrapefruit.radius * 2 +
+                            ingredients_info.redgrapefruit.gap),
+                    Math.floor(ingredients_info.redgrapefruit.rows * scale)
                 );
 
                 World.add(app_world, ingred);
