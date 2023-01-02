@@ -225,6 +225,18 @@ function getCupStyleImage() {
 
             break;
         }
+        case "bull": {
+            cup_style_img = new Image();
+            cup_style_img.src = "./cupstyle_images/bull.png";
+            const width_scale = 0.5;
+            cup_w = WORLD_WIDTH * width_scale;
+            console.log(cup_style_img.width);
+            cup_h = (cup_w / cup_style_img.width) * cup_style_img.height;
+            cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
+            cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
+
+            break;
+        }
         default:
             console.log("encountered unknown cupstyle");
             break;
