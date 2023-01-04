@@ -19,6 +19,7 @@ const color_card = {
     chocolatesmoothie: "rgba(60,40,20,0.8)",
     passionfruitdoublebang: "rgba(222,195,2,0.8)",
     redgrapefruit: "rgba(236,35,27,0.8)",
+    mango: "rgba(228,177,55,0.9)",
 };
 let tea_base = null;
 
@@ -29,6 +30,8 @@ const ingredients_info = {
     coconutfruit: { radius: 25, gap: 20, rows: 3 },
     xiancao: { radius: 30, gap: 30, rows: 3 },
     redgrapefruit: { radius: 150, gap: 50, rows: 2 },
+    greenlemon: { radius: 150, gap: 50, rows: 1 },
+    mango: { radius: 50, gap: 0, rows: 8 },
 };
 
 var Engine = Matter.Engine,
@@ -207,9 +210,9 @@ function getCupStyleImage() {
         case "rabbit": {
             cup_style_img = new Image();
             cup_style_img.src = "./cupstyle_images/rabbit.png";
-            const width_scale = 0.5;
+            const width_scale = 0.3;
             cup_w = WORLD_WIDTH * width_scale;
-            cup_h = (cup_w / cup_style_img.width) * cup_style_img.height;
+            cup_h = (cup_w / 200) * 200;
             cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
             cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
             break;
@@ -219,7 +222,7 @@ function getCupStyleImage() {
             cup_style_img.src = "./cupstyle_images/sadtea.png";
             const width_scale = 0.5;
             cup_w = WORLD_WIDTH * width_scale;
-            cup_h = (cup_w / cup_style_img.width) * cup_style_img.height;
+            cup_h = (cup_w / 449) * 370;
             cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
             cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
 
@@ -231,12 +234,38 @@ function getCupStyleImage() {
             const width_scale = 0.5;
             cup_w = WORLD_WIDTH * width_scale;
             console.log(cup_style_img.width);
-            cup_h = (cup_w / cup_style_img.width) * cup_style_img.height;
+            cup_h = (cup_w / 291) * 250;
             cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
             cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
-
             break;
         }
+
+        case "lihua": {
+            cup_style_img = new Image();
+            cup_style_img.src = "./cupstyle_images/lihua.png";
+            // 1024 * 1024
+            const width_scale = 1;
+            cup_w = WORLD_WIDTH * width_scale;
+            console.log(cup_style_img.width);
+            cup_h = (cup_w / 1024) * 1024;
+            cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
+            cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
+            break;
+        }
+
+        case "pusa": {
+            cup_style_img = new Image();
+            cup_style_img.src = "./cupstyle_images/pusa.png";
+            // 1200 * 1200
+            const width_scale = 0.4;
+            cup_w = WORLD_WIDTH * width_scale;
+            console.log(cup_style_img.width);
+            cup_h = (cup_w / 1200) * 1200;
+            cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
+            cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
+            break;
+        }
+
         default:
             console.log("encountered unknown cupstyle");
             break;
@@ -271,6 +300,7 @@ function getTeaBase() {
             break;
         case "lemonade":
             tea_base = "lemonade";
+            ingredients.push("greenlemon");
             break;
         case "chocolatesmoothie":
             tea_base = "chocolatesmoothie";
@@ -287,6 +317,12 @@ function getTeaBase() {
         case "redgrapefruit":
             tea_base = "redgrapefruit";
             ingredients.push("redgrapefruit");
+            break;
+        case "baixiangmang":
+            tea_base = "mango";
+            ingredients.push("passionfruit");
+            ingredients.push("mango");
+
             break;
         default:
             console.log("Unknown teabase");
@@ -450,10 +486,7 @@ MilkteaSimulator.init = function () {
             global_click_controller();
             showQuote();
 
-            if (
-                _engine.world.composites.length == 0 &&
-                water_left_in_bottle == 0
-            ) {
+            if (water_left_in_bottle == 0) {
                 tryPlayBurpSoundAndFinishDrinking();
             }
 
@@ -740,13 +773,41 @@ function getCoconutFruit(xx, yy, columns, rows) {
             var body = Bodies.rectangle(
                 x,
                 y,
-                ingredients_info.coconutfruit.radius,
-                ingredients_info.coconutfruit.radius,
+                ingredients_info.coconutfruit.radius * 2,
+                ingredients_info.coconutfruit.radius * 2,
                 { friction: 0.01, restitution: 0.4 }
             );
 
             body.render.fillStyle = "rgba(190,190,190,0.5)";
             body.render.strokeStyle = "rgba(160,160,160,0.5)";
+
+            body.density = 0.0005; //default value is 0.001
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
+function getMango(xx, yy, columns, rows) {
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.mango.gap,
+        ingredients_info.mango.gap,
+        function (x, y, column, row) {
+            var body = Bodies.rectangle(
+                x,
+                y,
+                ingredients_info.mango.radius * 2 + Common.random(0, 50),
+                ingredients_info.mango.radius * 2 + Common.random(-50, 0),
+                { friction: 0.01, restitution: 0.4 }
+            );
+
+            body.render.fillStyle = "rgba(228,128,55,0.9)";
+            body.render.strokeStyle = "rgba(228,128,55,0.9)";
 
             body.density = 0.0005; //default value is 0.001
 
@@ -772,8 +833,8 @@ function getPassionFruit(xx, yy, columns, rows) {
                 { friction: 0.01, restitution: 0.4 }
             );
 
-            body.render.fillStyle = "#222222";
-            body.render.strokeStyle = "#FFFFFF";
+            body.render.fillStyle = "rgba(66,58,52,0.7)";
+            body.render.strokeStyle = "rgba(66,58,52,0.2)";
 
             body.density = 0.0005; //default value is 0.001
 
@@ -784,15 +845,6 @@ function getPassionFruit(xx, yy, columns, rows) {
 }
 
 function getRedGrapeFruit(xx, yy, columns, rows) {
-    // let texture_img = new Image();
-    // texture_img.src = "./textures/red_grapefruit.png";
-    // const img_scale = ingredients_info.redgrapefruit.radius / texture_img.width;
-    // console.log(
-    //     texture_img,
-    //     texture_img.naturalWidth,
-    //     texture_img.naturalHeight
-    // );
-
     var ingredient = Composites.stack(
         xx,
         yy,
@@ -829,6 +881,38 @@ function getRedGrapeFruit(xx, yy, columns, rows) {
     return ingredient;
 }
 
+function getGreenLemon(xx, yy, columns, rows) {
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.greenlemon.gap,
+        ingredients_info.greenlemon.gap,
+        function (x, y, column, row) {
+            var body = Bodies.circle(x, y, ingredients_info.greenlemon.radius, {
+                friction: 0.02,
+                restitution: 0.4,
+                render: {
+                    sprite: {
+                        texture: "./textures/green_lemon.png",
+                        xScale: ingredients_info.greenlemon.radius / 100,
+                        yScale: ingredients_info.greenlemon.radius / 100,
+                    },
+                },
+            });
+
+            body.render.fillStyle = "#000000";
+            body.render.strokeStyle = "#FFFFFF";
+
+            body.density = 0.002;
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
 function getPearl(xx, yy, columns, rows) {
     var ingredient = Composites.stack(
         xx,
@@ -841,11 +925,6 @@ function getPearl(xx, yy, columns, rows) {
             var body = Bodies.circle(x, y, ingredients_info.pearl.radius, {
                 friction: 0.02,
                 restitution: 0.4,
-                render: {
-                    sprite: {
-                        texture: "./textures/yellow_lemon.svg",
-                    },
-                },
             });
 
             body.render.fillStyle = "#000000";
@@ -961,7 +1040,7 @@ function makeBeverage(app_world) {
     var now_y = WORLD_HEIGHT;
     var scale = 1;
     while (!estimateHeightPassed(max_water_level, scale)) {
-        scale = scale * 0.5;
+        scale = scale * 0.8;
     }
     //make it
     console.log("makeBeverage");
@@ -972,7 +1051,7 @@ function makeBeverage(app_world) {
                     now_y -
                     (ingredients_info.pearl.radius * 2 +
                         ingredients_info.pearl.gap) *
-                        ingredients_info.pearl.rows;
+                        Math.floor(ingredients_info.pearl.rows * scale);
                 var ingred = getPearl(
                     0,
                     now_y,
@@ -989,7 +1068,7 @@ function makeBeverage(app_world) {
                     now_y -
                     (ingredients_info.westrice.radius * 2 +
                         ingredients_info.westrice.gap) *
-                        ingredients_info.westrice.rows;
+                        Math.floor(ingredients_info.westrice.rows * scale);
                 var ingred = getWestRice(
                     0,
                     now_y,
@@ -1007,7 +1086,7 @@ function makeBeverage(app_world) {
                     now_y -
                     (ingredients_info.passionfruit.radius * 2 +
                         ingredients_info.passionfruit.gap) *
-                        ingredients_info.passionfruit.rows;
+                        Math.floor(ingredients_info.passionfruit.rows * scale);
                 var ingred = getPassionFruit(
                     0,
                     now_y,
@@ -1024,7 +1103,7 @@ function makeBeverage(app_world) {
                     now_y -
                     (ingredients_info.coconutfruit.radius * 2 +
                         ingredients_info.coconutfruit.gap) *
-                        ingredients_info.coconutfruit.rows;
+                        Math.floor(ingredients_info.coconutfruit.rows * scale);
                 var ingred = getCoconutFruit(
                     0,
                     now_y,
@@ -1041,7 +1120,7 @@ function makeBeverage(app_world) {
                     now_y -
                     (ingredients_info.xiancao.radius * 2 +
                         ingredients_info.xiancao.gap) *
-                        ingredients_info.xiancao.rows;
+                        Math.floor(ingredients_info.xiancao.rows * scale);
                 var ingred = getXiancao(
                     0,
                     now_y,
@@ -1059,7 +1138,7 @@ function makeBeverage(app_world) {
                     now_y -
                     (ingredients_info.redgrapefruit.radius * 2 +
                         ingredients_info.redgrapefruit.gap) *
-                        ingredients_info.redgrapefruit.rows;
+                        Math.floor(ingredients_info.redgrapefruit.rows * scale);
                 var ingred = getRedGrapeFruit(
                     0,
                     now_y,
@@ -1068,6 +1147,41 @@ function makeBeverage(app_world) {
                             ingredients_info.redgrapefruit.gap),
                     Math.floor(ingredients_info.redgrapefruit.rows * scale)
                 );
+
+                World.add(app_world, ingred);
+                break;
+            case "greenlemon":
+                now_y =
+                    now_y -
+                    (ingredients_info.greenlemon.radius * 2 +
+                        ingredients_info.greenlemon.gap) *
+                        Math.floor(ingredients_info.greenlemon.rows * scale);
+                var ingred = getGreenLemon(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
+                        (ingredients_info.greenlemon.radius * 2 +
+                            ingredients_info.greenlemon.gap),
+                    Math.floor(ingredients_info.greenlemon.rows * scale)
+                );
+
+                World.add(app_world, ingred);
+                break;
+            case "mango":
+                now_y =
+                    now_y -
+                    (ingredients_info.mango.radius * 2 +
+                        ingredients_info.mango.gap) *
+                        Math.floor(ingredients_info.mango.rows * scale);
+                var ingred = getMango(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
+                        (ingredients_info.mango.radius * 2 +
+                            ingredients_info.mango.gap),
+                    Math.floor(ingredients_info.mango.rows * scale)
+                );
+                console.log("scale,", scale);
 
                 World.add(app_world, ingred);
                 break;
