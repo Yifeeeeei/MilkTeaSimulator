@@ -20,6 +20,8 @@ const color_card = {
     passionfruitdoublebang: "rgba(222,195,2,0.8)",
     redgrapefruit: "rgba(236,35,27,0.8)",
     mango: "rgba(228,177,55,0.9)",
+    redtea: "rgba(153,70,57,0.7)",
+    taro: "rgba(138,107,190,1.0)",
 };
 let tea_base = null;
 
@@ -32,6 +34,7 @@ const ingredients_info = {
     redgrapefruit: { radius: 150, gap: 50, rows: 2 },
     greenlemon: { radius: 150, gap: 50, rows: 1 },
     mango: { radius: 50, gap: 0, rows: 8 },
+    pudding: { radius: 50, gap: 10, rows: 3 },
 };
 
 var Engine = Matter.Engine,
@@ -265,6 +268,18 @@ function getCupStyleImage() {
             cup_pos_y = WORLD_HEIGHT * 0.4 - 0.5 * cup_h;
             break;
         }
+        case "miracle": {
+            //1137 * 644
+            cup_style_img = new Image();
+            cup_style_img.src = "./cupstyle_images/miracle.png";
+            const width_scale = 1;
+            cup_w = WORLD_WIDTH * width_scale;
+            console.log(cup_style_img.width);
+            cup_h = (cup_w / 1137) * 644;
+            cup_pos_x = WORLD_WIDTH * 0.5 - 0.5 * cup_w;
+            cup_pos_y = WORLD_HEIGHT - cup_h;
+            break;
+        }
 
         default:
             console.log("encountered unknown cupstyle");
@@ -322,7 +337,10 @@ function getTeaBase() {
             tea_base = "mango";
             ingredients.push("passionfruit");
             ingredients.push("mango");
-
+            break;
+        case "xiangningdacha":
+            tea_base = "redtea";
+            ingredients.push("greenlemon");
             break;
         default:
             console.log("Unknown teabase");
@@ -778,8 +796,9 @@ function getCoconutFruit(xx, yy, columns, rows) {
                 { friction: 0.01, restitution: 0.4 }
             );
 
-            body.render.fillStyle = "rgba(190,190,190,0.5)";
+            body.render.fillStyle = "rgba(240,240,240,0.6)";
             body.render.strokeStyle = "rgba(160,160,160,0.5)";
+            body.render.lineWidth = 10;
 
             body.density = 0.0005; //default value is 0.001
 
@@ -999,6 +1018,38 @@ function getXiancao(xx, yy, columns, rows) {
     return ingredient;
 }
 
+function getPudding(xx, yy, columns, rows) {
+    var ingredient = Composites.stack(
+        xx,
+        yy,
+        columns,
+        rows,
+        ingredients_info.pudding.gap,
+        ingredients_info.pudding.gap,
+        function (x, y, column, row) {
+            var body = Bodies.rectangle(
+                x,
+                y,
+                2 * (ingredients_info.pudding.radius + Common.random(0, 40)),
+                2 * (ingredients_info.pudding.radius + Common.random(0, 10)),
+                {
+                    friction: 0.02,
+                    restitution: 0.4,
+                }
+            );
+
+            body.render.fillStyle = "rgba(241,215,94,0.7)";
+            body.render.strokeStyle = "rgba(213,187,66,0.2)";
+            body.render.lineWidth = 30;
+
+            body.density = 0.0001;
+
+            return body;
+        }
+    );
+    return ingredient;
+}
+
 // estimate height to make sure it do not spill out
 
 //only things like pearls or westrice that sinks to the bottom and take up the space bellow max water level
@@ -1128,6 +1179,23 @@ function makeBeverage(app_world) {
                         (ingredients_info.xiancao.radius * 2 +
                             ingredients_info.xiancao.gap),
                     Math.floor(ingredients_info.xiancao.rows * scale)
+                );
+
+                World.add(app_world, ingred);
+                break;
+            case "pudding":
+                now_y =
+                    now_y -
+                    (ingredients_info.pudding.radius * 2 +
+                        ingredients_info.pudding.gap) *
+                        Math.floor(ingredients_info.pudding.rows * scale);
+                var ingred = getPudding(
+                    0,
+                    now_y,
+                    WORLD_WIDTH /
+                        (ingredients_info.pudding.radius * 2 +
+                            ingredients_info.pudding.gap),
+                    Math.floor(ingredients_info.pudding.rows * scale)
                 );
 
                 World.add(app_world, ingred);
