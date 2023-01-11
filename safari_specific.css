@@ -1,0 +1,10 @@
+@media (orientation: portrait) {
+    body {
+        -webkit-transform: rotate(0deg);
+    }
+}
+@media (orientation: landscape) {
+    body {
+        -webkit-transform: rotate(-90deg);
+    }
+}

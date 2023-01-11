@@ -7,9 +7,11 @@ document.addEventListener(
     { passive: false }
 );
 
+// safari specific
+
 // full screen
-let html_ele = document.getElementsByTagName("html")[0];
-html_ele.requestFullscreen();
+// let html_ele = document.getElementsByTagName("html")[0];
+// html_ele.requestFullscreen();
 
 // make all ingredients selector disapper
 

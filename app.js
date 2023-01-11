@@ -1349,8 +1349,6 @@ MilkteaSimulator.updateGravity = function (event) {
 };
 
 MilkteaSimulator.fullscreen = function () {
-    var lockFunction = window.screen.orientation.lock;
-
     var _fullscreenElement = _engine.render.canvas;
 
     if (
@@ -1368,11 +1366,44 @@ MilkteaSimulator.fullscreen = function () {
             );
         }
     }
-
-    if (lockFunction.call(window.screen.orientation, "portrait-primary")) {
-        console.log("Orientation locked");
-    } else {
-        console.error("There was a problem in locking the orientation");
+    try {
+        var lockFunction = window.screen.orientation.lock;
+        if (lockFunction.call(window.screen.orientation, "portrait-primary")) {
+            console.log("Orientation locked");
+        } else {
+            console.error("There was a problem in locking the orientation");
+        }
+    } catch (error) {
+        // probably safari
+        // $(document).ready(function () {
+        //     function reorient(e) {
+        //         var portrait = window.orientation % 180 == 0;
+        //         $("body").css(
+        //             "-webkit-transform",
+        //             !portrait ? "rotate(-90deg)" : ""
+        //         );
+        //     }
+        //     window.onorientationchange = reorient;
+        //     window.setTimeout(reorient, 0);
+        // }
+        // );
+        // window.addEventListener(
+        //     "onorientationchange",
+        //     function () {
+        //         if (window.orientation == -90) {
+        //             document.getElementsByTagName("body")[0].className =
+        //                 "orientright";
+        //         }
+        //         if (window.orientation == 90) {
+        //             document.getElementsByTagName("body")[0].className =
+        //                 "orientleft";
+        //         }
+        //         if (window.orientation == 0) {
+        //             document.getElementsByTagName("body")[0].className = "";
+        //         }
+        //     },
+        //     true
+        // );
     }
 };
 
