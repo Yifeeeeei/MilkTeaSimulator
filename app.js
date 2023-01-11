@@ -115,7 +115,30 @@ function tryPlayBurpSoundAndFinishDrinking() {
         burp_sounds[num].play();
     }
 }
+
+// the global param to control whether i should diaplay quote
+let need_quote = true;
+function getNeedQuote() {
+    var quote_selectors = document.getElementsByClassName("quote_selector");
+    let quote_value = "quote_yes";
+    for (let i = 0; i < quote_selectors.length; i++) {
+        let quote_input = quote_selectors[i];
+        if (quote_input.hasAttribute("checked")) {
+            quote_value = quote_input.value;
+            break;
+        }
+    }
+    if (quote_value == "no") {
+        need_quote = false;
+    } else {
+        need_quote = true;
+    }
+}
+
 function getQuote() {
+    if (!need_quote) {
+        return;
+    }
     var httpRequest = new XMLHttpRequest(); //第一步：建立所需的对象
     httpRequest.open("GET", "https://v1.hitokoto.cn/", true); //第二步：打开连接  将请求参数写在url中  ps:"http://localhost:8080/rest/xxx"
     httpRequest.send(); //第三步：发送请求  将请求参数写在URL中
@@ -154,6 +177,9 @@ function getQuote() {
 }
 
 function showQuote() {
+    if (!need_quote) {
+        return;
+    }
     if (finished_drinking && quote) {
         // console.log("showing");
         let paddings = 40;
@@ -457,6 +483,7 @@ MilkteaSimulator.init = function () {
 
         _engine.render.options.background = "#FFFFFF";
 
+        getNeedQuote();
         getQuote();
         getCupStyleImage();
 

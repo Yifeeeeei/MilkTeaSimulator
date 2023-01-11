@@ -55,14 +55,10 @@ html {
     border: 1px solid yellow;
 }
 
-.teabase_selector_wrapper {
-    text-align: center;
-    margin: 10px;
-    height: 15%;
-    border-bottom: 1px solid cyan;
-}
-
-.cupstyle_selector_wrapper {
+.teabase_selector_wrapper,
+.addings_selector_wrapper,
+.cupstyle_selector_wrapper,
+.quote_selector_wrapper {
     text-align: center;
     margin: 10px;
     height: 15%;
@@ -101,7 +97,8 @@ input {
 
 .teabase_selector_wrapper,
 .cupstyle_selector_wrapper,
-.ingredients_selector_wrapper {
+.ingredients_selector_wrapper,
+.quote_selector_wrapper {
     text-align: center;
     margin: 10px;
     height: 15%;
