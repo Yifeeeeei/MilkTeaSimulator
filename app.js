@@ -1374,6 +1374,9 @@ MilkteaSimulator.fullscreen = function () {
             console.error("There was a problem in locking the orientation");
         }
     } catch (error) {
+        alert(
+            "如果你在使用Safari的话，抱歉，Safari并不支持一个要用到的核心API，可以选择其他浏览器打开"
+        );
         // probably safari
         // $(document).ready(function () {
         //     function reorient(e) {

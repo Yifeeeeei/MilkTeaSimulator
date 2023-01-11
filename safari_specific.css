@@ -1,4 +1,6 @@
-@media (orientation: portrait) {
+/* fuck you safari */
+
+/* @media (orientation: portrait) {
     body {
         -webkit-transform: rotate(0deg);
     }
@@ -7,4 +9,4 @@
     body {
         -webkit-transform: rotate(-90deg);
     }
-}
+} */
