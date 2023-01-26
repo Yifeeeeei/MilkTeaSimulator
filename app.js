@@ -28,7 +28,7 @@ let tea_base = null;
 const ingredients_info = {
     pearl: { radius: 20, gap: 20, rows: 3 },
     westrice: { radius: 10, gap: 20, rows: 2 },
-    passionfruit: { radius: 10, gap: 20, rows: 5 },
+    passionfruit: { radius: 20, gap: 20, rows: 5 },
     coconutfruit: { radius: 25, gap: 20, rows: 3 },
     xiancao: { radius: 30, gap: 30, rows: 3 },
     redgrapefruit: { radius: 150, gap: 50, rows: 2 },
@@ -854,6 +854,7 @@ function getMango(xx, yy, columns, rows) {
 
             body.render.fillStyle = "rgba(228,128,55,0.9)";
             body.render.strokeStyle = "rgba(228,128,55,0.9)";
+            body.render.lineWidth = 10;
 
             body.density = 0.0005; //default value is 0.001
 
@@ -880,7 +881,8 @@ function getPassionFruit(xx, yy, columns, rows) {
             );
 
             body.render.fillStyle = "rgba(66,58,52,0.7)";
-            body.render.strokeStyle = "rgba(66,58,52,0.2)";
+            body.render.strokeStyle = "rgba(255,255,0.4)";
+            body.render.lineWidth = 10;
 
             body.density = 0.0005; //default value is 0.001
 
