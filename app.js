@@ -1373,6 +1373,7 @@ MilkteaSimulator.updateGravity = function (event) {
 MilkteaSimulator.fullscreen = function () {
     var _fullscreenElement = _engine.render.canvas;
     var all_ele = document.getElementById("all");
+    console.log(all_ele);
     all_ele.setAttribute("hidden", "hidden");
     if (
         !document.fullscreenElement &&
