@@ -1372,7 +1372,8 @@ MilkteaSimulator.updateGravity = function (event) {
 
 MilkteaSimulator.fullscreen = function () {
     var _fullscreenElement = _engine.render.canvas;
-
+    var all_ele = document.getElementById("all");
+    all_ele.setAttribute("hidden", "hidden");
     if (
         !document.fullscreenElement &&
         !document.mozFullScreenElement &&
@@ -1390,6 +1391,8 @@ MilkteaSimulator.fullscreen = function () {
             _fullscreenElement.webkitRequestFullscreen(
                 Element.ALLOW_KEYBOARD_INPUT
             );
+        } else {
+            // clear everything
         }
     }
     try {

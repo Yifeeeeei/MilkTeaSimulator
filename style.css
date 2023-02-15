@@ -128,3 +128,8 @@ label {
     /* color: yellow; */
     /* text-shadow: 2px 2px cyan; */
 }
+
+/* canvas {
+    position: fixed;
+    z-index: 10;
+} */
