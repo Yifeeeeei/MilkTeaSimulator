@@ -452,10 +452,29 @@ var debug_x = 0;
 var debug_y = 0;
 
 MilkteaSimulator.init = function () {
+    console.log("starting to init");
     var canvasContainer = document.getElementById("body"),
         demoStart = document.getElementById("button-start");
 
     demoStart.addEventListener("click", function () {
+        if (
+            typeof DeviceMotionEvent !== "undefined" &&
+            typeof DeviceMotionEvent.requestPermission === "function"
+        ) {
+            // (optional) Do something before API request prompt.
+            DeviceMotionEvent.requestPermission()
+                .then((response) => {
+                    // (optional) Do something after API prompt dismissed.
+                    if (response == "granted") {
+                        window.addEventListener("devicemotion", (e) => {
+                            // do something for 'e' here.
+                        });
+                    }
+                })
+                .catch(console.error);
+        } else {
+            // alert("DeviceMotionEvent is not defined");
+        }
         demoStart.style.display = "none";
         getTeaBase();
         getIngredients();
@@ -469,6 +488,7 @@ MilkteaSimulator.init = function () {
                 },
             },
         });
+        console.log("prepare to full screen");
 
         MilkteaSimulator.fullscreen();
 
