@@ -588,7 +588,7 @@ MilkteaSimulator.init = function () {
         true
     );
 
-    window.addEventListener("touchstart", MilkteaSimulator.fullscreen);
+    // window.addEventListener("touchstart", MilkteaSimulator.fullscreen);
 
     window.addEventListener(
         "orientationchange",
