@@ -491,7 +491,7 @@ MilkteaSimulator.init = function () {
         console.log("prepare to full screen");
 
         MilkteaSimulator.fullscreen();
-
+        console.log("full screen should be done");
         setTimeout(function () {
             var runner = Engine.run(_engine);
 
@@ -1378,11 +1378,15 @@ MilkteaSimulator.fullscreen = function () {
         !document.mozFullScreenElement &&
         !document.webkitFullscreenElement
     ) {
+        console.log("checking if full screen is available");
         if (_fullscreenElement.requestFullscreen) {
+            console.log("normal");
             _fullscreenElement.requestFullscreen();
         } else if (_fullscreenElement.mozRequestFullScreen) {
+            console.log("moz");
             _fullscreenElement.mozRequestFullScreen();
         } else if (_fullscreenElement.webkitRequestFullscreen) {
+            console.log("webkit");
             _fullscreenElement.webkitRequestFullscreen(
                 Element.ALLOW_KEYBOARD_INPUT
             );
