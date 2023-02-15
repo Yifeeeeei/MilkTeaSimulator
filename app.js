@@ -1400,6 +1400,7 @@ MilkteaSimulator.fullscreen = function () {
             console.error("There was a problem in locking the orientation");
         }
     } catch (error) {
+        console.log("safari err");
         // alert(
         //     "如果你在使用Safari的话，请务必竖屏状态下开启屏幕锁定旋转"
         // );
